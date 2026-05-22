@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JNONO | Admin Structure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20260327a" />
+</head>
+<body class="admin-shell">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-brand">JNONO Admin</div>
+      <nav class="admin-sidebar-nav">
+        <a href="/admin.html">Admin Home</a>
+        <a class="active" href="/admin-structure.html">Structure</a>
+        <a href="/admin-questions.html">Questions</a>
+        <a href="/admin-translation.html">Translation</a>
+        <a href="/admin-members.html">Members</a>
+        <a href="/admin-progress.html">Progress</a>
+        <a href="/admin-dashboard.html">Dashboard</a>
+        <a href="/admin-settings.html">Settings</a>
+        <a href="/">Front site</a>
+      </nav>
+      <div class="auth-actions admin-sidebar-auth">
+        <span id="adminWelcome" class="welcome hidden"></span>
+        <button class="btn ghost hidden" id="adminLogoutBtn">退出管理</button>
+      </div>
+    </aside>
+
+    <main class="admin-content">
+      <section id="adminLoginPanel" class="panel" style="max-width:560px;margin:30px auto 0;">
+        <div class="panel-head">
+          <h2>管理系统登录</h2>
+          <p>登录后进入结构管理模块</p>
+        </div>
+        <form id="adminLoginForm" class="login-form" style="margin-top:14px;">
+          <label>
+            管理员账号
+            <input id="adminEmailInput" type="email" required placeholder="请输入管理员账号" />
+          </label>
+          <label>
+            管理员密码
+            <input id="adminPasswordInput" type="password" required placeholder="请输入密码" />
+          </label>
+          <button class="btn primary" type="submit">登录管理系统</button>
+        </form>
+        <p id="adminLoginError" class="login-error hidden" style="color:#be2f2f"></p>
+      </section>
+
+      <section id="adminPanel" class="panel hidden">
+      <div class="panel-head">
+        <h2>结构管理（Exam Structure Manager）</h2>
+        <p>统一维护结构树：program（项目）/ sub_item（子项）/ exam_module（考试模块）。</p>
+      </div>
+      <details id="structureCreateCollapse" class="admin-collapsible">
+        <summary>新增项目(program) / 新增子项(sub_item)</summary>
+        <div class="admin-collapsible-body">
+          <div class="filters">
+            <label>
+              新项目代码（program_key）
+              <input id="structureProgramKeyInput" type="text" placeholder="例如：contractor" />
+            </label>
+            <label>
+              新项目名称
+              <input id="structureProgramNameInput" type="text" placeholder="例如：承包商" />
+            </label>
+            <label>
+              排序（可选）
+              <input id="structureProgramSortOrderInput" type="number" value="100" min="1" />
+            </label>
+            <label class="toggle" style="align-self:flex-end;">
+              <input id="structureProgramEnabledInput" type="checkbox" checked />
+              <span>启用</span>
+            </label>
+          </div>
+          <div class="filters">
+            <label>
+              所属项目（program）
+              <select id="structureSubItemProgramSelect"></select>
+            </label>
+            <label>
+              新子项代码（sub_item_key）
+              <input id="structureSubItemKeyInput" type="text" placeholder="例如：c10_electrical" />
+            </label>
+            <label>
+              新子项名称
+              <input id="structureSubItemNameInput" type="text" placeholder="例如：C-10 Electrical" />
+            </label>
+            <label>
+              排序（可选）
+              <input id="structureSubItemSortOrderInput" type="number" value="100" min="1" />
+            </label>
+            <label class="toggle" style="align-self:flex-end;">
+              <input id="structureSubItemEnabledInput" type="checkbox" checked />
+              <span>启用</span>
+            </label>
+          </div>
+          <div class="catalog-actions">
+            <button class="btn primary" id="createStructureProgramBtn">新增项目(program)</button>
+            <button class="btn primary" id="createStructureSubItemBtn">新增子项(sub_item)</button>
+            <button class="btn" id="reloadExamStructureBtn">刷新结构</button>
+          </div>
+        </div>
+      </details>
+      <div class="table-wrap table-scroll table-scroll-lg">
+        <table class="admin-table" id="examStructureTable">
+          <thead>
+            <tr>
+              <th>层级</th>
+              <th>类型</th>
+              <th>结构 Key / 模块代码</th>
+              <th>名称（可编辑）</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="examStructureTbody"></tbody>
+        </table>
+      </div>
+      <p id="examStructureMsg" class="register-success hidden" style="color:#0b6b53"></p>
+
+      <hr style="margin:18px 0;border:none;border-top:1px solid #d7e0e8;" />
+
+      <details id="advancedExamManager" class="panel admin-collapsible admin-collapsible-panel" style="padding:14px;">
+        <summary>高级设置：考试项目管理</summary>
+        <div style="margin-top:12px;">
+          <div class="panel-head">
+            <h2>考试项目管理</h2>
+            <p>仅管理考试结构：项目 / 子项 / 考试类型 / 显示名称 / 绑定分类 / 题量 / 时长 / 是否启用。</p>
+          </div>
+          <div class="filters">
+            <label>
+              项目代码（industry_key）
+              <input id="examIndustryKeyInput" type="text" placeholder="例如：contractor" />
+            </label>
+            <label>
+              项目名称（industry_name）
+              <input id="examIndustryNameInput" type="text" placeholder="例如：Contractor License" />
+            </label>
+            <label>
+              执照组代码（exam_family_key）
+              <input id="examFamilyKeyInput" type="text" placeholder="例如：c_specialty / b_general" />
+            </label>
+            <label>
+              执照组名称（exam_family_name）
+              <input id="examFamilyNameInput" type="text" placeholder="例如：C Specialty / B General Building" />
+            </label>
+            <label>
+              子项代码（trade_code，技术考试必填）
+              <input id="examTradeCodeInput" type="text" placeholder="例如：c10_electrical" />
+            </label>
+            <label>
+              考试类型
+              <select id="examTypeInput">
+                <option value="">请选择考试类型</option>
+                <option value="law_business">法律考试</option>
+                <option value="trade">技术考试</option>
+              </select>
+            </label>
+            <label>
+              显示名称
+              <input id="examNameInput" type="text" placeholder="例如：C-10 Electrical Trade" />
+            </label>
+            <label>
+              绑定分类（来自题型分类管理）
+              <select id="examCategorySelectInput"></select>
+            </label>
+            <label>
+              题量
+              <input id="examQuestionCountInput" type="number" value="100" min="1" />
+            </label>
+            <label>
+              时长（分钟）
+              <input id="examTimeMinutesInput" type="number" value="180" min="1" />
+            </label>
+            <label>
+              排序（可选）
+              <input id="examSortOrderInput" type="number" value="100" />
+            </label>
+            <label class="toggle" style="align-self:flex-end;">
+              <input id="examEnabledInput" type="checkbox" checked />
+              <span>启用考试</span>
+            </label>
+          </div>
+          <p id="examCreateHint" style="margin:8px 0 0;color:#5f6d82;">
+            请先选择项目、子项（如需）和考试类型，再确认系统带出的默认值后保存。
+          </p>
+          <div class="catalog-actions">
+            <button class="btn primary" id="createExamCatalogBtn">新增考试</button>
+            <button class="btn" id="reloadExamCatalogBtn">刷新考试结构</button>
+          </div>
+          <div class="table-wrap table-scroll table-scroll-md">
+            <table class="admin-table" id="examCatalogTable">
+              <thead>
+                <tr>
+                  <th>项目</th>
+                  <th>子项</th>
+                  <th>考试类型</th>
+                  <th>显示名称</th>
+                  <th>绑定分类</th>
+                  <th>题量</th>
+                  <th>时长</th>
+                  <th>是否启用</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="examCatalogTbody"></tbody>
+            </table>
+          </div>
+          <p id="examCatalogMsg" class="register-success hidden" style="color:#0b6b53"></p>
+        </div>
+      </details>
+      </section>
+    </main>
+  </div>
+
+  <script src="/admin.js?v=20260424b" type="module"></script>
+</body>
+</html>

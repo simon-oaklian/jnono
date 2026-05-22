@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JNONO | Admin Dashboard Modules</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20260327a" />
+</head>
+<body class="admin-shell">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-brand">JNONO Admin</div>
+      <nav class="admin-sidebar-nav">
+        <a href="/admin.html">Admin Home</a>
+        <a href="/admin-structure.html">Structure</a>
+        <a href="/admin-questions.html">Questions</a>
+        <a href="/admin-translation.html">Translation</a>
+        <a href="/admin-members.html">Members</a>
+        <a href="/admin-progress.html">Progress</a>
+        <a class="active" href="/admin-dashboard.html">Dashboard</a>
+        <a href="/admin-settings.html">Settings</a>
+        <a href="/">Front site</a>
+      </nav>
+      <div class="auth-actions admin-sidebar-auth">
+        <span id="adminWelcome" class="welcome hidden"></span>
+        <button class="btn ghost hidden" id="adminLogoutBtn">退出管理</button>
+      </div>
+    </aside>
+
+    <main class="admin-content">
+      <section id="adminLoginPanel" class="panel" style="max-width:560px;margin:30px auto 0;">
+        <div class="panel-head">
+          <h2>管理系统登录</h2>
+          <p>登录后进入前台模块管理模块</p>
+        </div>
+        <form id="adminLoginForm" class="login-form" style="margin-top:14px;">
+          <label>
+            管理员账号
+            <input id="adminEmailInput" type="email" required placeholder="请输入管理员账号" />
+          </label>
+          <label>
+            管理员密码
+            <input id="adminPasswordInput" type="password" required placeholder="请输入密码" />
+          </label>
+          <button class="btn primary" type="submit">登录管理系统</button>
+        </form>
+        <p id="adminLoginError" class="login-error hidden" style="color:#be2f2f"></p>
+      </section>
+
+      <section id="adminPanel" class="panel hidden">
+        <div class="panel-head">
+          <h2>前台模块管理（Dashboard）</h2>
+          <p>控制前台首页/导航模块显示、可见范围、排序和跳转目标。</p>
+        </div>
+
+        <div class="panel" style="margin-top:12px;padding:14px;">
+          <div class="panel-head">
+            <h2>首页模块管理（Dashboard Modules）</h2>
+            <p>控制前台 Dashboard 卡片的显示、排序、可见用户类型和跳转目标。</p>
+          </div>
+          <div class="filters">
+            <label>
+              module_code
+              <input id="dashboardModuleCodeInput" type="text" placeholder="例如：resources_center" />
+            </label>
+            <label>
+              模块标题
+              <input id="dashboardModuleTitleInput" type="text" placeholder="例如：Resources" />
+            </label>
+            <label>
+              module_type
+              <select id="dashboardModuleTypeInput">
+                <option value="exam_card">exam_card</option>
+                <option value="practice_center">practice_center</option>
+                <option value="mock_exam_entry">mock_exam_entry</option>
+                <option value="progress_tracker">progress_tracker</option>
+                <option value="course_video">course_video</option>
+                <option value="course_audio">course_audio</option>
+                <option value="live_stream">live_stream</option>
+                <option value="resources">resources</option>
+                <option value="account_settings">account_settings</option>
+                <option value="custom_link">custom_link</option>
+              </select>
+            </label>
+            <label>
+              route_type
+              <select id="dashboardRouteTypeInput">
+                <option value="internal_page">internal_page</option>
+                <option value="exam_home">exam_home</option>
+                <option value="category_practice">category_practice</option>
+                <option value="mock_exam">mock_exam</option>
+                <option value="placeholder">placeholder</option>
+                <option value="external_link">external_link</option>
+              </select>
+            </label>
+            <label>
+              route_target
+              <input id="dashboardRouteTargetInput" type="text" placeholder="例如：practice_center / https://..." />
+            </label>
+            <label>
+              linked_exam_code（可选）
+              <input id="dashboardLinkedExamCodeInput" type="text" placeholder="例如：ca_general_b" />
+            </label>
+            <label>
+              visible_for_exam_codes（逗号分隔）
+              <input id="dashboardVisibleExamCodesInput" type="text" placeholder="例如：LAW_BUSINESS,B_GENERAL" />
+            </label>
+            <label>
+              visible_for_membership_tiers（逗号分隔）
+              <input id="dashboardVisibleTiersInput" type="text" placeholder="例如：pro_599,ai_999" />
+            </label>
+            <label>
+              排序
+              <input id="dashboardSortOrderInput" type="number" value="100" />
+            </label>
+            <label>
+              badge_text
+              <input id="dashboardBadgeTextInput" type="text" placeholder="例如：Coming Soon" />
+            </label>
+            <label class="toggle" style="align-self:flex-end;">
+              <input id="dashboardModuleEnabledInput" type="checkbox" checked />
+              <span>启用模块</span>
+            </label>
+            <label class="toggle" style="align-self:flex-end;">
+              <input id="dashboardModulePlaceholderInput" type="checkbox" />
+              <span>占位模块</span>
+            </label>
+          </div>
+          <div class="catalog-actions">
+            <button class="btn primary" id="createDashboardModuleBtn">新增模块</button>
+            <button class="btn" id="reloadDashboardModulesBtn">刷新模块列表</button>
+          </div>
+          <div class="table-wrap table-scroll table-scroll-lg" style="margin-top:10px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>module_code</th>
+                  <th>标题</th>
+                  <th>type</th>
+                  <th>route</th>
+                  <th>visible exam codes</th>
+                  <th>tiers</th>
+                  <th>排序</th>
+                  <th>启用</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardModulesTbody"></tbody>
+            </table>
+          </div>
+          <p id="dashboardModulesMsg" class="register-success hidden" style="margin-top:8px;"></p>
+        </div>
+
+        <div class="panel" style="margin-top:12px;padding:14px;">
+          <div class="panel-head">
+            <h2>课程模块占位管理（Video / Audio / Live）</h2>
+            <p>先维护可扩展内容结构与入口，不做播放器/直播实现。</p>
+          </div>
+          <div class="filters">
+            <label>
+              content_code
+              <input id="courseContentCodeInput" type="text" placeholder="例如：video_law_intro" />
+            </label>
+            <label>
+              标题
+              <input id="courseContentTitleInput" type="text" placeholder="例如：Law Business 速览课" />
+            </label>
+            <label>
+              content_type
+              <select id="courseContentTypeInput">
+                <option value="video">video</option>
+                <option value="audio">audio</option>
+                <option value="live">live</option>
+              </select>
+            </label>
+            <label>
+              linked_exam_code（可选）
+              <input id="courseLinkedExamCodeInput" type="text" placeholder="例如：ca_general_b" />
+            </label>
+            <label>
+              access_tier（可选）
+              <select id="courseAccessTierInput">
+                <option value="">不限</option>
+                <option value="free">free</option>
+                <option value="basic_399">basic_399</option>
+                <option value="pro_599">pro_599</option>
+                <option value="ai_999">ai_999</option>
+              </select>
+            </label>
+            <label>
+              排序
+              <input id="courseSortOrderInput" type="number" value="100" />
+            </label>
+            <label class="toggle" style="align-self:flex-end;">
+              <input id="courseEnabledInput" type="checkbox" checked />
+              <span>启用</span>
+            </label>
+            <label class="toggle" style="align-self:flex-end;">
+              <input id="coursePlaceholderInput" type="checkbox" checked />
+              <span>占位</span>
+            </label>
+            <label style="flex:1 1 420px;">
+              描述
+              <input id="courseDescriptionInput" type="text" placeholder="例如：即将上线，敬请期待" />
+            </label>
+          </div>
+          <div class="catalog-actions">
+            <button class="btn primary" id="createCourseContentBtn">新增课程占位</button>
+            <button class="btn" id="reloadCourseContentsBtn">刷新课程列表</button>
+          </div>
+          <div class="table-wrap table-scroll table-scroll-md" style="margin-top:10px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>content_code</th>
+                  <th>标题</th>
+                  <th>type</th>
+                  <th>linked_exam_code</th>
+                  <th>tier</th>
+                  <th>排序</th>
+                  <th>启用</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="courseContentsTbody"></tbody>
+            </table>
+          </div>
+          <p id="courseContentsMsg" class="register-success hidden" style="margin-top:8px;"></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/admin.js?v=20260424b" type="module"></script>
+</body>
+</html>

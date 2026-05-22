@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JNONO | Admin Progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20260328a" />
+</head>
+<body class="admin-shell">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-brand">JNONO Admin</div>
+      <nav class="admin-sidebar-nav">
+        <a href="/admin.html">Admin Home</a>
+        <a href="/admin-structure.html">Structure</a>
+        <a href="/admin-questions.html">Questions</a>
+        <a href="/admin-translation.html">Translation</a>
+        <a href="/admin-members.html">Members</a>
+        <a class="active" href="/admin-progress.html">Progress</a>
+        <a href="/admin-dashboard.html">Dashboard</a>
+        <a href="/admin-settings.html">Settings</a>
+        <a href="/">Front site</a>
+      </nav>
+      <div class="auth-actions admin-sidebar-auth">
+        <span id="adminWelcome" class="welcome hidden"></span>
+        <button class="btn ghost hidden" id="adminLogoutBtn">退出管理</button>
+      </div>
+    </aside>
+
+    <main class="admin-content">
+      <section id="adminLoginPanel" class="panel" style="max-width:560px;margin:30px auto 0;">
+        <div class="panel-head">
+          <h2>管理系统登录</h2>
+          <p>登录后进入进度管理模块</p>
+        </div>
+        <form id="adminLoginForm" class="login-form" style="margin-top:14px;">
+          <label>
+            管理员账号
+            <input id="adminEmailInput" type="email" required placeholder="请输入管理员账号" />
+          </label>
+          <label>
+            管理员密码
+            <input id="adminPasswordInput" type="password" required placeholder="请输入密码" />
+          </label>
+          <button class="btn primary" type="submit">登录管理系统</button>
+        </form>
+        <p id="adminLoginError" class="login-error hidden" style="color:#be2f2f"></p>
+      </section>
+
+      <section id="adminPanel" class="panel hidden">
+        <div class="panel-head">
+          <h2>进度管理</h2>
+          <p>管理用户考试绑定、学习进度与执照进度。</p>
+        </div>
+
+        <div class="panel" style="margin-top:12px;padding:14px;">
+          <div class="panel-head">
+            <h2>A. 用户查找与选择区</h2>
+            <p>通过用户名/邮箱快速搜索，避免依赖超长下拉。</p>
+          </div>
+          <div class="filters">
+            <label style="min-width:320px;">
+              搜索用户（姓名 / 昵称 / 邮箱）
+              <input id="progressUserSearchInput" type="text" placeholder="输入关键词后筛选用户" />
+            </label>
+            <label style="flex:1 1 320px;">
+              当前选中用户（辅助下拉）
+              <select id="userAssignSelect"></select>
+            </label>
+          </div>
+          <p id="progressSelectedUserLabel" class="admin-help-text" style="margin-top:8px;">当前未选择用户</p>
+          <div id="progressUserSearchResults" class="progress-user-results" style="margin-top:10px;"></div>
+          <div class="catalog-actions">
+            <button class="btn" id="reloadUserAssignmentBtn">刷新用户数据</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px;padding:14px;">
+          <div class="panel-head">
+            <h2>B. 当前用户摘要区</h2>
+            <p>快速查看用户当前绑定与进度状态。当前套餐仅做只读参考。</p>
+          </div>
+          <div class="member-summary-card">
+            <article>
+              <h4>用户</h4>
+              <div id="progressSummaryName">--</div>
+            </article>
+            <article>
+              <h4>邮箱</h4>
+              <div id="progressSummaryEmail">--</div>
+            </article>
+            <article>
+              <h4>当前考试绑定</h4>
+              <div id="progressSummaryExams">--</div>
+            </article>
+            <article>
+              <h4>学习进度</h4>
+              <div id="progressSummaryPercent">0%</div>
+            </article>
+            <article>
+              <h4>CSLB 申请状态</h4>
+              <div id="progressSummaryApplication">未提交</div>
+            </article>
+            <article>
+              <h4>考试预约状态</h4>
+              <div id="progressSummaryScheduled">未预约</div>
+            </article>
+            <article>
+              <h4>当前套餐（只读）</h4>
+              <div id="progressSummaryTier">--</div>
+            </article>
+            <article>
+              <h4>最近更新（参考）</h4>
+              <div id="progressSummaryUpdated">--</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px;padding:14px;">
+          <div class="panel-head">
+            <h2>C. Progress 编辑区</h2>
+            <p>先维护考试绑定，再维护学习/执照进度。</p>
+          </div>
+
+          <div class="panel" style="margin-top:10px;padding:12px;">
+            <div class="panel-head">
+              <h2>C1. 考试绑定区</h2>
+              <p>考试选项与 Structure 同步，按可选项多选，不再手输 exam code。</p>
+            </div>
+            <div id="progressAssignedExamOptions" class="progress-exam-options" style="margin-top:8px;"></div>
+            <p id="progressAssignedExamSummary" class="admin-help-text" style="margin-top:8px;">当前未分配考试</p>
+            <input id="assignedExamCodesInput" type="hidden" />
+            <div class="filters" style="margin-top:8px;">
+              <label style="flex:1 1 320px;">
+                分配模块标签（可选）
+                <input id="assignedModuleTagsInput" type="text" placeholder="例如：mock,course" />
+              </label>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:10px;padding:12px;">
+            <div class="panel-head">
+              <h2>C2. 学习 / 执照进度编辑区</h2>
+              <p>按申请、学习、考试三组字段维护进度。</p>
+            </div>
+
+            <div class="filters">
+              <label class="toggle" style="align-self:flex-end;">
+                <input id="progressEnrolledInput" type="checkbox" checked />
+                <span>已报名（enrolled）</span>
+              </label>
+              <label>
+                申请编号（application_number）
+                <input id="progressApplicationNumberInput" type="text" placeholder="可为空" />
+              </label>
+            </div>
+
+            <div class="filters">
+              <label>
+                学习进度（0-100）
+                <input id="progressPercentInput" type="number" min="0" max="100" value="0" />
+              </label>
+              <label class="toggle" style="align-self:flex-end;">
+                <input id="progressStudyStartedInput" type="checkbox" />
+                <span>已开始学习</span>
+              </label>
+            </div>
+
+            <div class="filters">
+              <label>
+                考试日期
+                <input id="progressExamDateInput" type="date" />
+              </label>
+              <label class="toggle" style="align-self:flex-end;">
+                <input id="progressExamScheduledInput" type="checkbox" />
+                <span>已预约考试</span>
+              </label>
+              <label class="toggle" style="align-self:flex-end;">
+                <input id="progressExamPassedInput" type="checkbox" />
+                <span>已通过考试</span>
+              </label>
+            </div>
+
+            <div class="filters">
+              <label style="flex:1 1 420px;">
+                备注
+                <input id="progressNotesInput" type="text" placeholder="可填写管理员备注" />
+              </label>
+            </div>
+          </div>
+
+          <div class="catalog-actions" style="margin-top:12px;">
+            <button class="btn primary" id="saveUserAssignmentBtn" data-default-text="保存考试绑定/进度">保存考试绑定/进度</button>
+          </div>
+          <p id="userAssignmentMsg" class="register-success hidden" style="margin-top:8px;"></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/admin.js?v=20260424b" type="module"></script>
+</body>
+</html>

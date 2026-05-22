@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>会员训练中心 | CSLB Exam Practice | B License California</title>
+  <meta name="description" content="付费会员训练中心：提供加州承包商考试（CSLB exam）分类训练、模拟考试、错题复习与学习进度同步，适用于 B license California 备考。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20260403-practice-ui-1" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">JNONO · 专注LICENSE考试培训</div>
+    <nav>
+      <a href="#dashboard">学习模块</a>
+      <a href="#catalog">题库</a>
+      <a href="#progress">学习进度</a>
+    </nav>
+    <div class="auth-actions">
+      <span id="welcomeText" class="welcome"></span>
+      <button class="btn ghost" id="logoutBtn">退出</button>
+    </div>
+  </header>
+
+  <main class="member-shell">
+    <div class="member-layout">
+      <aside class="member-sidebar" aria-label="会员导航">
+        <div class="member-sidebar-title">学习导航</div>
+        <section id="sidebarProgressCard" class="sidebar-progress-card" aria-label="学习与执照进度状态">
+          <div class="sidebar-progress-head">
+            <h3>学习 / 执照状态</h3>
+          </div>
+          <div class="sidebar-progress-grid">
+            <article class="sidebar-progress-item">
+              <span class="sidebar-progress-label">当前考试</span>
+              <strong class="sidebar-progress-value" data-summary="exam">未选择</strong>
+            </article>
+            <article class="sidebar-progress-item">
+              <span class="sidebar-progress-label">学习进度</span>
+              <strong class="sidebar-progress-value" data-summary="study-progress">--</strong>
+            </article>
+            <article class="sidebar-progress-item">
+              <span class="sidebar-progress-label">CSLB申请</span>
+              <strong class="sidebar-progress-value" data-summary="application-submitted">未提交</strong>
+            </article>
+            <article class="sidebar-progress-item">
+              <span class="sidebar-progress-label">考试预约</span>
+              <strong class="sidebar-progress-value" data-summary="exam-scheduled">未预约</strong>
+            </article>
+          </div>
+          <p id="sidebarProgressAlert" class="sidebar-progress-alert"></p>
+          <div class="sidebar-progress-actions">
+            <button class="btn ghost sidebar-progress-cta secondary" id="onboardingOpenBtn" type="button">下一步</button>
+            <button class="btn primary sidebar-progress-cta" data-action="summary-continue" type="button">继续学习</button>
+          </div>
+        </section>
+        <div class="member-side-group">
+          <div class="member-side-group-title">系统导航</div>
+          <nav class="member-side-nav member-side-nav-fixed">
+            <a class="member-side-link active" href="#dashboard" data-nav-key="home" data-nav-action="scroll" data-target-id="dashboard">我的首页</a>
+            <a class="member-side-link" href="#catalog" data-nav-key="practice" data-nav-action="practice" data-target-id="catalog">分项练习</a>
+            <a class="member-side-link" href="#catalog" data-nav-key="mock" data-nav-action="mock" data-target-id="catalog">模拟考试</a>
+            <a class="member-side-link" href="#progress" data-nav-key="study-progress" data-nav-action="scroll" data-target-id="progress">学习进度</a>
+          </nav>
+        </div>
+        <div id="memberDynamicNavSection" class="member-side-group hidden">
+          <div class="member-side-group-title">更多功能</div>
+          <nav id="memberDynamicNav" class="member-side-nav member-side-nav-dynamic"></nav>
+        </div>
+      </aside>
+
+      <section class="member-content">
+        <section id="memberViewDashboard" class="member-view">
+          <section class="member-section-group" id="dashboardOverviewSection">
+            <div class="group-head member-page-head">
+              <h2>学习首页</h2>
+              <p>查看当前考试与进度摘要，继续你的训练</p>
+            </div>
+            <p class="member-mini-note">学习记录实时同步，手机 / iPad / 电脑可无缝衔接。</p>
+
+            <section id="dashboard" class="panel">
+              <div class="panel-head">
+                <h2>状态总览</h2>
+                <p>先看状态，再执行下一步训练</p>
+              </div>
+              <p id="dashboardModulesEmpty" class="catalog-empty-note hidden"></p>
+              <div id="dashboardModuleSections" class="dashboard-section-stack">
+                <section id="learningPathSection" class="dashboard-section-block">
+                  <div class="dashboard-section-head">
+                    <h3>Learning Path / 学习路径</h3>
+                    <p>明确当前阶段、下一步建议与推荐原因</p>
+                  </div>
+                  <article class="learning-path-card">
+                    <div class="learning-path-headline">
+                      <span id="learningPathStageBadge" class="learning-path-stage">当前阶段：准备阶段</span>
+                      <span id="learningPathTierHint" class="learning-path-tier-hint">基础路径建议</span>
+                    </div>
+                    <p id="learningPathStageDesc" class="learning-path-desc">你正在建立学习基础，建议先完成分项训练并同步关键进度。</p>
+                    <p id="learningPathNextSummary" class="learning-path-next">下一步建议：开始分项练习</p>
+                    <p id="learningPathReason" class="learning-path-reason">建议原因：系统会优先引导你完成当前阶段的核心动作。</p>
+                    <p id="learningPathContinueMeta" class="learning-path-continue">继续学习：暂无可继续记录，将从默认分项开始。</p>
+                    <button class="btn primary" id="learningPathActionBtn" type="button">开始分项练习</button>
+                  </article>
+                </section>
+
+                <section id="dashboardExamSection" class="dashboard-section-block hidden" aria-hidden="true">
+                  <div class="dashboard-section-head">
+                    <h3>My Exams / 我的考试</h3>
+                    <p>你当前可进入的考试</p>
+                  </div>
+                  <div id="dashboardExamGrid" class="dashboard-modules-grid compact"></div>
+                </section>
+
+                <section id="continueLearningSection" class="dashboard-section-block">
+                  <div class="dashboard-section-head">
+                    <h3>Continue Learning / 继续学习</h3>
+                    <p>优先回到你当前的训练上下文</p>
+                  </div>
+                  <div class="continue-learning-card">
+                    <p id="continueLearningTitle" class="continue-title">暂无学习记录，先开始一组分项训练。</p>
+                    <p id="continueLearningMeta" class="continue-meta">系统会根据最近练习自动推荐下一步。</p>
+                    <button class="btn primary" id="continueLearningBtn">继续学习</button>
+                  </div>
+                </section>
+
+                <section id="recentPerformanceSection" class="dashboard-section-block">
+                  <div class="dashboard-section-head">
+                    <h3>Recent Performance / 最近表现</h3>
+                    <p>快速查看正确率与薄弱项</p>
+                  </div>
+                  <div class="recent-performance-grid">
+                    <article>
+                      <span>最近正确率</span>
+                      <strong id="recentAccuracy">--</strong>
+                    </article>
+                    <article>
+                      <span>最近模式</span>
+                      <strong id="recentMode">--</strong>
+                    </article>
+                    <article>
+                      <span>累计练习</span>
+                      <strong id="recentAttempts">0</strong>
+                    </article>
+                    <article>
+                      <span>建议关注</span>
+                      <strong id="weakFocus">--</strong>
+                    </article>
+                  </div>
+                </section>
+              </div>
+            </section>
+          </section>
+        </section>
+
+        <section id="memberViewPractice" class="member-view hidden" aria-hidden="true">
+          <section class="member-section-group" id="practiceCenterSection">
+            <div class="group-head">
+              <h2>题库训练区</h2>
+              <p>分项练习、模拟考试、学习结果与进度管理</p>
+            </div>
+            <div class="practice-context-bar" id="practiceContextBar">
+              <span>Current Exam：<strong id="practiceContextExam">未选择</strong></span>
+              <span>Current Mode：<strong id="practiceContextMode">分项练习</strong></span>
+            </div>
+            <div id="learningPathHintPractice" class="learning-path-inline-hint"></div>
+
+            <section id="catalog" class="panel">
+              <div class="panel-head">
+                <h2>题库入口</h2>
+                <p>先刷分类题，再做模拟考试</p>
+              </div>
+              <div class="filters">
+                <label>
+                  训练模式
+                  <select id="practiceMode">
+                    <option value="category" selected>分类题训练</option>
+                    <option value="mock">模拟考试</option>
+                  </select>
+                </label>
+                <label>
+                  Program
+                  <select id="industrySelect"></select>
+                </label>
+                <label>
+                  License Type
+                  <select id="examFamilySelect"></select>
+                </label>
+                <label>
+                  Specialization
+                  <select id="tradeSelect"></select>
+                </label>
+                <label>
+                  Exam Type
+                  <select id="examTypeSelect"></select>
+                </label>
+                <label id="topicLabel">
+                  Question Category
+                  <select id="topicSelect"></select>
+                </label>
+                <label id="countLabel">
+                  题量
+                  <select id="countSelect">
+                    <option value="10">10 题</option>
+                    <option value="20" selected>20 题</option>
+                    <option value="50">50 题</option>
+                    <option value="all">全部</option>
+                  </select>
+                </label>
+                <label id="mockPresetLabel" class="hidden">
+                  官方模拟规则
+                  <input id="mockPresetInput" type="text" value="CSLB 模拟：115题 / 210分钟（固定）" readonly />
+                </label>
+                <label class="toggle">
+                  <input type="checkbox" id="timedMode" checked />
+                  <span id="timedModeText">计时模式（每题 75 秒）</span>
+                </label>
+                <label class="toggle" id="bilingualToggleWrap">
+                  <input type="checkbox" id="showChineseToggle" />
+                  <span>显示中文辅助</span>
+                </label>
+              </div>
+              <div class="catalog-actions">
+                <button class="btn primary" id="startBtn">开始训练</button>
+                <button class="btn" id="wrongBookBtn">刷错题</button>
+                <button class="btn ghost" id="resetProgressBtn">清空进度</button>
+              </div>
+              <p id="catalogEmptyState" class="catalog-empty-note hidden"></p>
+            </section>
+
+            <section id="quizSection" class="panel hidden">
+              <div class="quiz-head">
+                <div>
+                  <h2 id="quizTitle">练习中</h2>
+                  <p id="quizMeta">第 1 题 / 共 20 题</p>
+                  <p id="questionTypeTag" class="demo-tip hidden"></p>
+                </div>
+                <div class="timer" id="timerWrap">
+                  <span id="timerLabel">剩余</span>
+                  <strong id="timer">01:15</strong>
+                </div>
+              </div>
+
+              <article class="question-card">
+                <div id="questionLayout" class="question-layout">
+                  <section class="question-pane english-pane">
+                    <h3 class="pane-title">English Exam Question</h3>
+                    <p class="exam-language-note">Answer based on English wording.</p>
+                    <h4 id="questionText" class="question-text"></h4>
+                    <div id="questionMediaBox" class="question-media-box hidden" style="margin:14px 0 18px 0;padding:14px;border:1px dashed #d7deea;border-radius:12px;background:#fafcff;">
+                      <div id="questionMediaInner" style="text-align:center;"></div>
+                    </div>
+                    <div id="options" class="options"></div>
+                  </section>
+                  <section id="questionAssistPane" class="question-pane chinese-pane hidden">
+                    <h3 class="pane-title">中文辅助</h3>
+                    <h4 id="questionTextZh" class="question-text"></h4>
+                    <div id="optionsZh" class="assist-options"></div>
+                  </section>
+                </div>
+                <section id="learningSupport" class="learning-support hidden">
+                  <h4>中文学习支持</h4>
+                  <div class="support-grid">
+                    <article>
+                      <h5>中文解析</h5>
+                      <p id="supportExplanationZh">--</p>
+                    </article>
+                    <article>
+                      <h5>考点分析</h5>
+                      <p id="supportKeyPointZh">--</p>
+                    </article>
+                    <article>
+                      <h5>高频词 / 重点词</h5>
+                      <p id="supportVocabZh">--</p>
+                    </article>
+                    <article>
+                      <h5>记忆方法</h5>
+                      <p id="supportMemoryTipZh">--</p>
+                    </article>
+                    <article id="supportMemoryTrickWrap" class="hidden">
+                      <h5>Memory Trick</h5>
+                      <p id="supportMemoryTrick">--</p>
+                    </article>
+                  </div>
+                </section>
+              </article>
+
+              <div class="quiz-actions">
+                <button class="btn" id="prevBtn">上一题</button>
+                <button class="btn" id="nextBtn">下一题</button>
+                <button class="btn primary" id="submitBtn">交卷</button>
+              </div>
+            </section>
+
+            <section id="resultSection" class="panel hidden">
+              <div class="panel-head">
+                <h2>成绩结果</h2>
+                <p>本次练习总结</p>
+              </div>
+              <div class="result-grid">
+                <article>
+                  <h3 id="scoreText">0%</h3>
+                  <p>正确率</p>
+                </article>
+                <article>
+                  <h3 id="rightText">0 / 0</h3>
+                  <p>答对题数</p>
+                </article>
+                <article>
+                  <h3 id="wrongText">0</h3>
+                  <p>错题新增</p>
+                </article>
+              </div>
+              <button class="btn" id="reviewBtn">查看解析</button>
+              <div id="reviewList" class="review-list hidden"></div>
+            </section>
+          </section>
+        </section>
+
+        <section id="memberViewProgress" class="member-view hidden" aria-hidden="true">
+          <section class="member-section-group" id="progressSectionGroup">
+            <div class="group-head">
+              <h2>学习进度</h2>
+              <p>查看刷题表现与执照进度状态</p>
+            </div>
+            <div id="learningPathHintProgress" class="learning-path-inline-hint"></div>
+
+            <section id="progress" class="panel">
+              <div class="panel-head">
+                <h2>学习进度</h2>
+                <p>按执照类型统计</p>
+              </div>
+              <div id="licensingProgressSnapshot" class="licensing-progress-snapshot"></div>
+              <div class="filters" style="margin-top:10px;">
+                <label>
+                  Application Number
+                  <input id="applicationNumberInput" type="text" placeholder="输入后将自动标记 Application Submitted" />
+                </label>
+                <label>
+                  Exam Date
+                  <input id="examDateInput" type="date" />
+                </label>
+                <label class="toggle" style="align-self:flex-end;">
+                  <input id="studyStartedInput" type="checkbox" />
+                  <span>已开始学习</span>
+                </label>
+                <label class="toggle" style="align-self:flex-end;">
+                  <input id="examScheduledInput" type="checkbox" />
+                  <span>已预约考试</span>
+                </label>
+                <label class="toggle" style="align-self:flex-end;">
+                  <input id="examPassedInput" type="checkbox" />
+                  <span>已通过考试</span>
+                </label>
+                <label style="flex:1 1 320px;">
+                  Notes
+                  <input id="licensingNotesInput" type="text" placeholder="可选备注" />
+                </label>
+              </div>
+              <div class="catalog-actions" style="margin-top:10px;">
+                <button class="btn" id="saveLicensingProgressBtn">保存执照进度</button>
+              </div>
+              <p id="licensingProgressMsg" class="register-success hidden"></p>
+              <div id="progressCards" class="progress-cards"></div>
+            </section>
+          </section>
+        </section>
+
+        <section id="memberViewPlaceholder" class="member-view hidden" aria-hidden="true">
+          <section class="member-section-group" id="placeholderSectionGroup">
+            <div class="group-head">
+              <h2>模块入口占位区</h2>
+              <p>课程/资源/账号等预留模块会在此展示</p>
+            </div>
+
+            <section id="accountCenterSection" class="panel hidden">
+              <div class="panel-head">
+                <h2>账号设置</h2>
+                <p>管理你的资料、联系方式与会员计划</p>
+              </div>
+
+              <div class="account-center-grid">
+                <section class="account-card">
+                  <div class="account-card-head">
+                    <h3>基本资料</h3>
+                    <p>可先保存到当前设备，后续会接通云端资料同步。</p>
+                  </div>
+                  <div class="filters account-form-grid">
+                    <label>
+                      姓名 / 昵称
+                      <input id="accountDisplayNameInput" type="text" placeholder="请输入姓名或昵称" />
+                    </label>
+                    <label>
+                      昵称（可选）
+                      <input id="accountNicknameInput" type="text" placeholder="例如：Simon" />
+                    </label>
+                    <label>
+                      邮箱
+                      <input id="accountEmailInput" type="text" readonly />
+                    </label>
+                    <label>
+                      手机号
+                      <input id="accountPhoneInput" type="tel" placeholder="未绑定，请输入手机号" />
+                    </label>
+                    <label style="grid-column: 1 / -1;">
+                      当前考试/已分配考试
+                      <input id="accountAssignedExamsInput" type="text" readonly />
+                    </label>
+                  </div>
+                  <div class="catalog-actions account-actions">
+                    <button class="btn primary" id="saveAccountProfileBtn">保存资料</button>
+                  </div>
+                  <p id="accountProfileMsg" class="catalog-empty-note hidden"></p>
+                </section>
+
+                <section class="account-card">
+                  <div class="account-card-head">
+                    <h3>安全设置</h3>
+                    <p>修改密码入口已预留，可随时补齐后端安全接口。</p>
+                  </div>
+                  <div class="account-security-box">
+                    <p>修改密码：当前版本暂未开放在线改密，建议联系管理员处理，后续会在此直接支持。</p>
+                    <button class="btn ghost" id="accountChangePasswordBtn" type="button">修改密码（即将支持）</button>
+                  </div>
+                  <p id="accountSecurityMsg" class="demo-tip hidden"></p>
+                </section>
+
+                <section class="account-card">
+                  <div class="account-card-head">
+                    <h3>当前会员计划</h3>
+                    <p>查看当前套餐、到期时间与可用权益。</p>
+                  </div>
+                  <div class="account-current-plan">
+                    <div class="account-plan-row">
+                      <span>当前计划</span>
+                      <strong id="accountCurrentPlanName">--</strong>
+                    </div>
+                    <div class="account-plan-row">
+                      <span>计划层级</span>
+                      <strong id="accountCurrentPlanTier">--</strong>
+                    </div>
+                    <div class="account-plan-row">
+                      <span>到期时间</span>
+                      <strong id="accountCurrentPlanExpiry">未设置</strong>
+                    </div>
+                    <p id="accountCurrentPlanDesc" class="account-plan-desc">--</p>
+                    <ul id="accountCurrentBenefits" class="account-benefit-list"></ul>
+                  </div>
+                </section>
+              </div>
+
+              <section class="account-upgrade-panel">
+                <div class="account-card-head">
+                  <h3>套餐对比与升级</h3>
+                  <p>选择更适合你当前备考阶段的训练计划。</p>
+                </div>
+                <div class="account-upgrade-grid" id="accountUpgradeGrid">
+                  <article class="account-upgrade-card" data-tier="basic_399">
+                    <header>
+                      <h4>Basic</h4>
+                      <span class="account-tier-badge" data-role="current-badge">当前套餐</span>
+                    </header>
+                    <ul>
+                      <li>基础题库</li>
+                      <li>分项练习</li>
+                      <li>模拟考试</li>
+                    </ul>
+                    <button class="btn ghost hidden" data-upgrade-tier="basic_399">当前套餐</button>
+                  </article>
+                  <article class="account-upgrade-card" data-tier="pro_599">
+                    <header>
+                      <h4>Pro</h4>
+                      <span class="account-tier-badge hidden" data-role="current-badge">当前套餐</span>
+                    </header>
+                    <ul>
+                      <li>包含 Basic 全部</li>
+                      <li>题目解析</li>
+                      <li>双语辅助</li>
+                      <li>更完整学习支持</li>
+                    </ul>
+                    <button class="btn primary" data-upgrade-tier="pro_599">升级到 Pro</button>
+                  </article>
+                  <article class="account-upgrade-card" data-tier="ai_999">
+                    <header>
+                      <h4>AI</h4>
+                      <span class="account-tier-badge hidden" data-role="current-badge">当前套餐</span>
+                    </header>
+                    <ul>
+                      <li>包含 Pro 全部</li>
+                      <li>Continue Learning 智能推荐</li>
+                      <li>AI 学习建议（预留）</li>
+                      <li>弱项强化推荐（预留）</li>
+                    </ul>
+                    <button class="btn primary" data-upgrade-tier="ai_999">升级到 AI</button>
+                  </article>
+                </div>
+                <p id="accountUpgradeMsg" class="catalog-empty-note hidden"></p>
+                <div class="account-upgrade-note">
+                  <p>升级 Pro：获得解析与更完整学习支持。</p>
+                  <p>升级 AI：获得智能推荐、学习建议与后续 AI 功能。</p>
+                </div>
+              </section>
+            </section>
+
+            <section id="modulePlaceholderSection" class="panel hidden">
+              <div class="panel-head">
+                <h2 id="modulePlaceholderTitle">模块占位</h2>
+                <p id="modulePlaceholderDesc">该模块已预留入口，后续可在后台继续配置内容。</p>
+              </div>
+              <div id="modulePlaceholderBody" class="module-placeholder-body"></div>
+            </section>
+          </section>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <template id="optionTemplate">
+    <label class="option-item">
+      <input type="radio" name="answer" />
+      <span></span>
+    </label>
+  </template>
+
+  <div id="onboardingModal" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-card onboarding-wizard" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+      <div class="modal-head">
+        <h3 id="onboardingTitle">完善执照进度（可选）</h3>
+        <button class="btn ghost" id="onboardingCloseBtn" type="button">继续刷题</button>
+      </div>
+      <p id="onboardingStepLabel" class="onboarding-step-label">Step 1 / 5</p>
+      <p class="onboarding-hint" style="margin:8px 14px 0;">你可以先开始刷题，也可以现在完善信息以获得更准确的学习建议。</p>
+      <div class="onboarding-body">
+        <section class="onboarding-step" data-step="1">
+          <h4>你是否已向 CSLB 提交申请？</h4>
+          <label><input type="radio" name="onboardingSubmitted" value="submitted" /> 已提交</label>
+          <label><input type="radio" name="onboardingSubmitted" value="not_submitted" /> 还没提交</label>
+          <label><input type="radio" name="onboardingSubmitted" value="unsure" /> 不确定</label>
+        </section>
+        <section class="onboarding-step hidden" data-step="2">
+          <h4>填写 Application Number（如已提交）</h4>
+          <input id="onboardingApplicationNumber" type="text" placeholder="例如：APP-123456" />
+          <p class="onboarding-hint">填写后系统会自动更新你的申请状态。</p>
+        </section>
+        <section class="onboarding-step hidden" data-step="3">
+          <h4>你是否已经开始学习？</h4>
+          <label><input type="radio" name="onboardingStudyStarted" value="yes" /> 已开始学习</label>
+          <label><input type="radio" name="onboardingStudyStarted" value="no" /> 还未开始</label>
+        </section>
+        <section class="onboarding-step hidden" data-step="4">
+          <h4>你是否已经预约考试？</h4>
+          <label><input type="radio" name="onboardingExamScheduled" value="yes" /> 已预约</label>
+          <label><input type="radio" name="onboardingExamScheduled" value="no" /> 未预约</label>
+          <input id="onboardingExamDate" type="date" />
+        </section>
+        <section class="onboarding-step hidden" data-step="5">
+          <h4>确认当前状态</h4>
+          <div id="onboardingReview" class="onboarding-review"></div>
+        </section>
+      </div>
+      <div class="onboarding-actions">
+        <button class="btn" id="onboardingPrevBtn" type="button">上一步</button>
+        <button class="btn" id="onboardingNextBtn" type="button">去完善进度</button>
+        <button class="btn" id="onboardingSaveLaterBtn" type="button">保存并稍后继续</button>
+        <button class="btn primary" id="onboardingSaveBtn" type="button">完成并保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/member.js?v=20260417-force-refresh-1" type="module"></script>
+
+  <div id="quizShellOverlay" aria-hidden="true">
+    <div class="quiz-shell-header">
+      <div class="quiz-shell-header-left">
+        <h2 class="quiz-shell-title" id="quizShellTitle">练习中</h2>
+        <span class="quiz-shell-chip" id="quizShellMeta">第 1 题 / 共 20 题</span>
+      </div>
+      <div class="quiz-shell-header-right">
+        <div class="timer" id="quizShellTimerWrap">
+          <span id="quizShellTimerLabel">剩余</span>
+          <strong id="quizShellTimer">01:15</strong>
+        </div>
+        <button type="button" class="btn" id="quizShellExitBtn">退出训练</button>
+        <button type="button" class="btn primary" id="quizShellSubmitBtn">交卷</button>
+      </div>
+    </div>
+
+    <div class="quiz-shell-body">
+      <div class="quiz-shell-main" id="quizShellMain"></div>
+      <div class="quiz-shell-side" id="quizShellSide"></div>
+    </div>
+
+    <div class="quiz-shell-footer">
+      <button type="button" class="btn" id="quizShellPrevBtn">上一题</button>
+      <button type="button" class="btn" id="quizShellNextBtn">下一题</button>
+      <button type="button" class="btn primary" id="quizShellSubmitBtnBottom">交卷</button>
+    </div>
+  </div>
+
+
+</body>
+</html>

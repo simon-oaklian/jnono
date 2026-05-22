@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JNONO | Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20260327a" />
+</head>
+<body class="admin-shell">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-brand">JNONO Admin</div>
+      <nav class="admin-sidebar-nav">
+        <a class="active" href="/admin.html">Admin Home</a>
+        <a href="/admin-structure.html">Structure</a>
+        <a href="/admin-questions.html">Questions</a>
+        <a href="/admin-translation.html">Translation</a>
+        <a href="/admin-members.html">Members</a>
+        <a href="/admin-progress.html">Progress</a>
+        <a href="/admin-dashboard.html">Dashboard</a>
+        <a href="/admin-settings.html">Settings</a>
+        <a href="/">Front site</a>
+      </nav>
+      <div class="auth-actions admin-sidebar-auth">
+        <span id="adminWelcome" class="welcome hidden"></span>
+        <button class="btn ghost hidden" id="adminLogoutBtn">退出管理</button>
+      </div>
+    </aside>
+
+    <main class="admin-content">
+      <section id="adminLoginPanel" class="panel" style="max-width:560px;margin:30px auto 0;">
+        <div class="panel-head">
+          <h2>管理系统登录</h2>
+          <p>登录后进入管理首页</p>
+        </div>
+        <form id="adminLoginForm" class="login-form" style="margin-top:14px;">
+          <label>
+            管理员账号
+            <input id="adminEmailInput" type="email" required placeholder="请输入管理员账号" />
+          </label>
+          <label>
+            管理员密码
+            <input id="adminPasswordInput" type="password" required placeholder="请输入密码" />
+          </label>
+          <button class="btn primary" type="submit">登录管理系统</button>
+        </form>
+        <p id="adminLoginError" class="login-error hidden" style="color:#be2f2f"></p>
+      </section>
+
+      <section id="adminPanel" class="panel hidden">
+        <div class="panel-head">
+          <h2>管理首页</h2>
+          <p>选择你要操作的模块</p>
+        </div>
+        <div class="benefit-grid">
+          <article>
+            <h3>Structure</h3>
+            <p>管理结构树与考试项目配置。</p>
+            <a class="btn primary" href="/admin-structure.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Structure</a>
+          </article>
+          <article>
+            <h3>Questions</h3>
+            <p>管理分类、导入题库、题目筛选与状态。</p>
+            <a class="btn primary" href="/admin-questions.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Questions</a>
+          </article>
+          <article>
+            <h3>Translation</h3>
+            <p>管理中文翻译校对与状态保存。</p>
+            <a class="btn primary" href="/admin-translation.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Translation</a>
+          </article>
+          <article>
+            <h3>Members</h3>
+            <p>管理会员计划、账号状态与内容权限。</p>
+            <a class="btn primary" href="/admin-members.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Members</a>
+          </article>
+          <article>
+            <h3>Progress</h3>
+            <p>管理考试绑定与学习/执照进度。</p>
+            <a class="btn primary" href="/admin-progress.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Progress</a>
+          </article>
+          <article>
+            <h3>Dashboard</h3>
+            <p>管理前台模块显示、可见范围和课程占位入口。</p>
+            <a class="btn primary" href="/admin-dashboard.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Dashboard</a>
+          </article>
+          <article>
+            <h3>Settings</h3>
+            <p>管理微信联系、价格文案与全局站点配置。</p>
+            <a class="btn primary" href="/admin-settings.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Settings</a>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/admin.js?v=20260424b" type="module"></script>
+</body>
+</html>

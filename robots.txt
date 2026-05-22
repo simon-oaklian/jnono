@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /pricing.html
+Disallow: /trial.html
+Disallow: /member
+Disallow: /member.html
+Disallow: /admin
+Disallow: /admin-*
+
+Sitemap: https://jnono.com/sitemap.xml

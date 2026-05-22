@@ -1,0 +1,53 @@
+# Secrets/local env
+.env
+.env.*
+*secret*
+*secrets*
+*credential*
+*credentials*
+*token*
+*oauth*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Data/content not included in code backup
+data/
+images/
+backups/
+templates/
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql
+*.log
+run.log
+jnono.log
+
+# Runtime/cache/history
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+*.bak
+*.bak*
+*.good_*
+_archive_*
+category_timer_submit_debug.txt
+
+# Local/editor/system
+.DS_Store
+._*
+.vscode/
+.cursor/
+*.command
+
+# Screenshots/mock exports are not code backup
+*.png
+*.jpg
+*.jpeg
+*.webp
