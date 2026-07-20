@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JNONO | Admin Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20260327a" />
+</head>
+<body class="admin-shell">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-brand">JNONO Admin</div>
+      <nav class="admin-sidebar-nav">
+        <a href="/admin.html">Admin Home</a>
+        <a href="/admin-structure.html">Structure</a>
+        <a href="/admin-questions.html">Questions</a>
+        <a href="/admin-translation.html">Translation</a>
+        <a href="/admin-members.html">Members</a>
+        <a href="/admin-progress.html">Progress</a>
+        <a href="/admin-dashboard.html">Dashboard</a>
+        <a class="active" href="/admin-settings.html">Settings</a>
+        <a href="/">Front site</a>
+      </nav>
+      <div class="auth-actions admin-sidebar-auth">
+        <span id="adminWelcome" class="welcome hidden"></span>
+        <button class="btn ghost hidden" id="adminLogoutBtn">退出管理</button>
+      </div>
+    </aside>
+
+    <main class="admin-content">
+      <section id="adminLoginPanel" class="panel" style="max-width:560px;margin:30px auto 0;">
+        <div class="panel-head">
+          <h2>管理系统登录</h2>
+          <p>登录后进入站点设置模块</p>
+        </div>
+        <form id="adminLoginForm" class="login-form" style="margin-top:14px;">
+          <label>
+            管理员账号
+            <input id="adminEmailInput" type="email" required placeholder="请输入管理员账号" />
+          </label>
+          <label>
+            管理员密码
+            <input id="adminPasswordInput" type="password" required placeholder="请输入密码" />
+          </label>
+          <button class="btn primary" type="submit">登录管理系统</button>
+        </form>
+        <p id="adminLoginError" class="login-error hidden" style="color:#be2f2f"></p>
+      </section>
+
+      <section id="adminPanel" class="panel hidden">
+        <div class="panel-head">
+          <h2>站点设置（Settings）</h2>
+          <p>仅保留站点级全局配置：微信联系、会员价格与限时活动倒计时。</p>
+        </div>
+
+        <div class="panel" style="margin-top:12px;padding:14px;">
+          <div class="panel-head">
+            <h2>微信联系设置</h2>
+            <p>更新前台首页“学习咨询 / 微信支持”中的客服微信号。</p>
+          </div>
+          <div class="filters">
+            <label>
+              客服微信号
+              <input id="siteWechatInput" type="text" placeholder="例如：JNONO_HELP" />
+            </label>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px;padding:14px;">
+          <div class="panel-head">
+            <h2>会员价格设置</h2>
+            <p>可配置原价、优惠价、时长与推荐标记。</p>
+          </div>
+          <div class="filters">
+            <label class="toggle" style="align-self:flex-end;">
+              <input id="pricingPromoEnabledInput" type="checkbox" />
+              <span>启用限时优惠</span>
+            </label>
+            <label>
+              优惠结束时间（UTC）
+              <input id="pricingPromoEndAtInput" type="datetime-local" />
+            </label>
+          </div>
+
+          <div class="table-wrap" style="margin-top:12px;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>方案</th>
+                  <th>原价</th>
+                  <th>优惠价</th>
+                  <th>时长文案</th>
+                  <th>推荐</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>基础训练</td>
+                  <td><input id="basicOriginalPriceInput" type="number" min="1" /></td>
+                  <td><input id="basicPromoPriceInput" type="number" min="1" /></td>
+                  <td><input id="basicDurationTextInput" type="text" /></td>
+                  <td>--</td>
+                </tr>
+                <tr>
+                  <td>专业训练</td>
+                  <td><input id="professionalOriginalPriceInput" type="number" min="1" /></td>
+                  <td><input id="professionalPromoPriceInput" type="number" min="1" /></td>
+                  <td><input id="professionalDurationTextInput" type="text" /></td>
+                  <td>
+                    <label class="toggle" style="margin:0;">
+                      <input id="professionalRecommendedInput" type="checkbox" />
+                      <span>推荐</span>
+                    </label>
+                  </td>
+                </tr>
+                <tr>
+                  <td>AI智能训练</td>
+                  <td><input id="aiOriginalPriceInput" type="number" min="1" /></td>
+                  <td><input id="aiPromoPriceInput" type="number" min="1" /></td>
+                  <td><input id="aiDurationTextInput" type="text" /></td>
+                  <td>--</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p id="sitePricingRuntimeHint" style="margin-top:10px;color:#5f6d82;"></p>
+        </div>
+
+        <div class="catalog-actions">
+          <button class="btn primary" id="saveSiteSettingsBtn">保存设置</button>
+          <button class="btn" id="reloadSiteSettingsBtn">刷新</button>
+        </div>
+        <p id="siteSettingsMsg" class="register-success hidden" style="margin-top:8px;"></p>
+      </section>
+    </main>
+  </div>
+
+  <script src="/admin.js?v=20260424b" type="module"></script>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b2bcc256ac741e8b45dcc4ad8f69bef"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

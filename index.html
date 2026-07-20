@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepLicense | 加州承包商考试培训 | CSLB Exam | B License California</title>
+  <meta name="description" content="PrepLicense 提供加州承包商考试（CSLB考试）训练，覆盖 California contractor license test、CSLB exam、B license California 备考，含中文解析、错题复习与模拟训练。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20260317d" />
+</head>
+<body class="landing-v2">
+  <div class="bg-shape shape-a"></div>
+  <div class="bg-shape shape-b"></div>
+
+  <header class="topbar lp-topbar">
+    <div class="brand">PrepLicense</div>
+    <nav class="lp-nav">
+      <a href="#values">平台介绍</a>
+      <a href="/pricing.html">会员方案</a>
+      <a href="#memberPortal">开始训练</a>
+      <a href="#wechatContact">微信咨询</a>
+    </nav>
+    <a class="btn primary lp-top-cta" href="#registerPanel">开始训练</a>
+  </header>
+
+  <main class="lp-main">
+    <section class="lp-hero">
+      <article class="lp-hero-copy">
+        <p class="lp-kicker">LICENSE EXAM TRAINING PLATFORM</p>
+        <h1 class="lp-hero-title">PrepLicense<br /><span>美国执照考试中文训练平台</span></h1>
+        <p class="lp-subtitle">执照考试模拟训练 + 中文解析 + 考点总结<br />帮助华人考生更高效通过美国 License 考试</p>
+        <div class="lp-hero-actions">
+          <a id="heroTryBtn" href="#registerPanel" class="btn primary">开始训练</a>
+          <a id="heroLoginBtn" href="#loginPanel" class="btn">已有账号？立即登录</a>
+        </div>
+      </article>
+      <article class="lp-hero-side">
+        <h3>为什么更容易坚持</h3>
+        <div class="lp-metrics">
+          <article><strong>考试风格训练</strong><span>提前熟悉真实考试题型</span></article>
+          <article><strong>中文解析</strong><span>快速理解题意与关键考点</span></article>
+          <article><strong>学习进度同步</strong><span>手机 / iPad / 电脑自动同步</span></article>
+        </div>
+      </article>
+    </section>
+
+    <section id="values" class="lp-section">
+      <div class="lp-section-head">
+        <p class="lp-kicker">Core Value</p>
+        <h2>清晰、实用、以通过率为目标的训练体验</h2>
+      </div>
+      <div class="lp-feature-grid lp-value-grid">
+        <article>
+          <h3>考试风格训练</h3>
+          <p>提前熟悉真实考试题型。</p>
+        </article>
+        <article>
+          <h3>中文解析</h3>
+          <p>快速理解题意与关键考点。</p>
+        </article>
+        <article>
+          <h3>学习进度同步</h3>
+          <p>手机 / iPad / 电脑自动同步。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="passFlow" class="lp-section">
+      <div class="lp-section-head">
+        <h2>为什么更容易通过考试</h2>
+      </div>
+      <div class="lp-feature-grid lp-value-grid">
+        <article>
+          <h3>分类训练</h3>
+          <p>按考试科目逐步强化，系统化掌握知识点。</p>
+        </article>
+        <article>
+          <h3>错题复习</h3>
+          <p>自动记录错题，反复训练重点考点。</p>
+        </article>
+        <article>
+          <h3>模拟考试</h3>
+          <p>接近真实考试节奏，提前适应考试环境。</p>
+        </article>
+      </div>
+      <div class="lp-pass-cta">
+        <a href="#memberPortal" class="btn primary">开始训练</a>
+      </div>
+    </section>
+
+    <section id="memberPortal" class="lp-section lp-auth-section">
+      <div class="lp-section-head">
+        <p class="lp-kicker">Start Here</p>
+        <h2>开始你的训练</h2>
+      </div>
+      <div class="lp-auth-layout">
+        <article id="loginPanel" class="lp-auth-card lp-login-primary">
+          <h3>登录继续训练</h3>
+          <p>已有账号可直接进入学习系统。</p>
+          <form id="loginForm" class="login-form">
+            <label>
+              邮箱账号
+              <input id="emailInput" type="email" placeholder="请输入邮箱" required />
+            </label>
+            <label>
+              密码
+              <input id="passwordInput" type="password" placeholder="请输入密码" required />
+            </label>
+            <button class="btn primary" type="submit">开始训练</button>
+          </form>
+          <p id="loginError" class="login-error hidden"></p>
+        </article>
+
+        <article id="registerPanel" class="lp-auth-card lp-register-secondary">
+          <h3>创建账号</h3>
+          <p>注册后即可进入训练系统并保存学习进度。</p>
+          <details class="lp-register-toggle">
+            <summary>立即注册</summary>
+            <form id="registerForm" class="login-form">
+              <label>
+                姓名
+                <input id="registerNameInput" type="text" placeholder="请输入姓名" required />
+              </label>
+              <label>
+                注册邮箱
+                <input id="registerEmailInput" type="email" placeholder="请输入邮箱" required />
+              </label>
+              <label>
+                设置密码
+                <input id="registerPasswordInput" type="password" placeholder="至少 6 位" minlength="6" required />
+              </label>
+              <button class="btn" type="submit">立即注册</button>
+            </form>
+          </details>
+          <p id="registerError" class="login-error hidden"></p>
+          <p id="registerSuccess" class="register-success hidden"></p>
+        </article>
+      </div>
+    </section>
+
+    <section id="studyPlan" class="lp-section lp-study-plan">
+      <div class="lp-section-head">
+        <p class="lp-kicker">Study Plan</p>
+        <h2>30 天通过训练计划</h2>
+      </div>
+      <div class="lp-plan-steps">
+        <p>每天 60–90 分钟</p>
+        <p>分类训练 + 错题复习</p>
+        <p>稳定提升通过率</p>
+      </div>
+      <a href="#memberPortal" class="btn primary">按计划开始训练</a>
+    </section>
+
+    <section id="seoOverview" class="lp-section">
+      <div class="lp-section-head">
+        <h2>加州承包商考试（CSLB）中文训练</h2>
+      </div>
+      <div class="lp-seo-copy">
+        <p>如果你正在准备 <strong>California contractor license test</strong>、<strong>CSLB exam</strong> 或 <strong>B license California</strong>，系统化训练通常比碎片化学习更有效。PrepLicense 通过分类练习、错题回顾和考试节奏模拟，帮助你更稳定地提升备考效率。</p>
+        <p>针对华人考生常见的理解难点，我们聚焦 <strong>加州承包商考试</strong>、<strong>CSLB考试</strong> 与 <strong>B证考试</strong> 场景，提供中文辅助理解与重点整理，让复习路径更清楚、学习节奏更可持续。</p>
+      </div>
+    </section>
+
+    <section id="wechatContact" class="lp-section wechat-float lp-consult">
+      <div class="lp-section-head">
+        <p class="lp-kicker">Consultation</p>
+        <h2>学习咨询 / 微信支持</h2>
+      </div>
+      <p class="lp-consult-copy">客服微信：<strong id="wechatIdText">JNONO_HELP</strong></p>
+      <p class="lp-consult-copy">有问题可先咨询，再决定是否开始训练。</p>
+      <div class="wechat-actions">
+        <a id="wechatOpenBtn" class="btn primary wechat-open" href="weixin://">尝试打开微信</a>
+        <button id="wechatCopyBtn" class="btn" type="button">复制微信号</button>
+      </div>
+      <p id="wechatHint" class="wechat-hint">手机端可直接打开微信，电脑端建议先复制微信号再添加好友。</p>
+    </section>
+  </main>
+
+  <script src="/app.js?v=20260317a" type="module"></script>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b2bcc256ac741e8b45dcc4ad8f69bef"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

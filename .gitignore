@@ -1,0 +1,54 @@
+# Secrets/local env
+.env
+.env.*
+*secret*
+*secrets*
+*credential*
+*credentials*
+*token*
+*oauth*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Runtime data/content/media
+data/
+images/
+backups/
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql
+*.log
+run.log
+jnono.log
+
+# Screenshots/media exports at repo root
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Python/runtime caches
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+
+# Backups/history snapshots
+*.bak
+*.bak*
+*.good_*
+*_archive_*
+_archive_*
+
+# Local/editor/system
+.DS_Store
+._*
+.vscode/
+.cursor/
+*.command
