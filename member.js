@@ -1854,7 +1854,7 @@ function renderQuestion() {
       ).trim();
 
     const promptText = String(view?.english?.prompt || q.question_text || "").toLowerCase();
-    const referencesFigure = /\b(figure|diagram|illustration|pictured|shown|arrow)\b/.test(promptText);
+    const referencesFigure = /\b(figure|diagram|illustration|pictured|shown|arrow|blueprint|plan)\b/.test(promptText) || /refer to the/i.test(promptText);
 
     mediaInner.innerHTML = "";
     mediaBox.classList.add("hidden");
