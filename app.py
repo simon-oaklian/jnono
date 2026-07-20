@@ -2419,6 +2419,7 @@ def ensure_questions_table(conn: sqlite3.Connection) -> None:
         "vocab_zh": "TEXT",
         "memory_trick": "TEXT",
         "memory_tip_zh": "TEXT",
+        "image_url": "TEXT DEFAULT ''",
         "created_at": "TEXT",
         "updated_at": "TEXT",
     }
