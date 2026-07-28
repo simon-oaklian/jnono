@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=20260327a" />
+  <link rel="stylesheet" href="/styles.css?v=20260727a" />
 </head>
 <body class="admin-shell">
   <div class="admin-layout">
@@ -68,7 +68,8 @@
               <select id="reviewQuestionSelect"></select>
             </label>
           </div>
-          <div class="panel" style="margin-top:12px;padding:12px;">
+          <p id="reviewEditorEmpty" class="admin-help-text" style="margin-top:14px;padding:12px;text-align:center;">请先在上方选择考试分类和题目，编辑区将在选题后显示。</p>
+          <div id="reviewEditorPanel" class="panel hidden" style="margin-top:12px;padding:12px;">
             <p style="margin:0 0 10px;color:#5f6d82;">
               翻译状态：<strong id="reviewTranslationStatus">--</strong>
             </p>
@@ -148,7 +149,7 @@
     </main>
   </div>
 
-  <script src="/admin.js?v=20260424b" type="module"></script>
+  <script src="/admin.js?v=20260727a" type="module"></script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b2bcc256ac741e8b45dcc4ad8f69bef"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

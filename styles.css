@@ -1085,7 +1085,7 @@ body.admin-shell .member-summary-card {
   background: #f8fbff;
   padding: 12px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
 }
 
@@ -1110,6 +1110,8 @@ body.admin-shell .member-summary-card div {
   color: #1b2b41;
   line-height: 1.4;
   font-weight: 700;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 body.admin-shell .admin-help-text {

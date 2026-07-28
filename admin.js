@@ -887,14 +887,26 @@ function renderUserAssignmentFields(user) {
   );
   const applicationSubmitted = progress?.applicationSubmitted === true || Boolean(String(progress?.applicationNumber || "").trim());
   const examScheduled = progress?.examScheduled === true;
-  const updatedText =
-    String(
+  const updatedRaw = String(
       user?.updatedAt ||
       user?.profileUpdatedAt ||
       user?.membershipUpdatedAt ||
       progress?.updatedAt ||
       ""
-    ).trim() || "--";
+    ).trim();
+  let updatedText = "--";
+  if (updatedRaw) {
+    try {
+      const d = new Date(updatedRaw);
+      updatedText = isNaN(d.getTime())
+        ? updatedRaw
+        : d.toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }) +
+          " " +
+          d.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+    } catch (_) {
+      updatedText = updatedRaw;
+    }
+  }
   setMemberSummaryText(memberSummaryName, user?.name || "学员", "学员");
   setMemberSummaryText(memberSummaryNickname, user?.nickname || "", "未设置");
   setMemberSummaryText(memberSummaryEmail, user?.email || "", "未设置");
@@ -4448,9 +4460,16 @@ async function loadReviewQuestions(examId, preferredQuestionId = "") {
     return;
   }
 
-  const payload = await apiFetch(`/api/admin/question-bank/questions?exam_id=${encodeURIComponent(examId)}`, {
-    token: state.token
-  });
+  let payload;
+  try {
+    payload = await apiFetch(`/api/admin/question-bank/questions?examId=${encodeURIComponent(examId)}`, {
+      token: state.token
+    });
+  } catch (err) {
+    setSelectPlaceholder(reviewQuestionSelect, `加载失败：${err.message}`);
+    clearReviewEditor();
+    return;
+  }
   const questions = (Array.isArray(payload?.questions) ? payload.questions : []).filter(
     (item) => !isDeletedQuestionForReview(item)
   );
@@ -4465,9 +4484,7 @@ async function loadReviewQuestions(examId, preferredQuestionId = "") {
   for (const q of questions) {
     const option = document.createElement("option");
     option.value = q.id;
-    option.textContent = `${q.id} · ${buildQuestionPreview(q)} · ${q.status || "active"} · ${translationStatusLabel(
-      q.translation_status
-    )}`;
+    option.textContent = `${buildQuestionPreview(q)} [${translationStatusLabel(q.translation_status)}]`;
     reviewQuestionSelect.appendChild(option);
   }
   reviewQuestionSelect.disabled = false;
@@ -4491,6 +4508,9 @@ function renderReviewQuestion(questionId) {
     clearReviewEditor();
     return;
   }
+
+  document.getElementById("reviewEditorPanel")?.classList.remove("hidden");
+  document.getElementById("reviewEditorEmpty")?.classList.add("hidden");
 
   const zh = question.zh || {};
   const en = question.en || {};
@@ -4574,9 +4594,7 @@ async function onSaveReview() {
         }
         const opt = reviewQuestionSelect?.querySelector(`option[value='${cssEscape(questionId)}']`);
         if (opt) {
-          opt.textContent = `${result.question.id} · ${buildQuestionPreview(result.question)} · ${result.question.status || "active"} · ${translationStatusLabel(
-            result.question.translation_status
-          )}`;
+          opt.textContent = `${buildQuestionPreview(result.question)} [${translationStatusLabel(result.question.translation_status)}]`;
         }
         renderReviewQuestion(questionId);
       }
@@ -4589,6 +4607,8 @@ async function onSaveReview() {
 }
 
 function clearReviewEditor() {
+  document.getElementById("reviewEditorPanel")?.classList.add("hidden");
+  document.getElementById("reviewEditorEmpty")?.classList.remove("hidden");
   if (!reviewPromptEn) return;
   enforceReviewEnglishReadOnly();
   reviewPromptEn.value = "";

@@ -105,8 +105,8 @@ const _tts = {
     tip.id = "_tts_word_tip";
     tip.style.cssText = [
       "position:fixed;z-index:99999;background:#1a1a2e;color:#fff",
-      "padding:10px 14px;border-radius:10px;font-size:14px;line-height:1.6",
-      "box-shadow:0 6px 20px rgba(0,0,0,0.35);max-width:240px;pointer-events:none",
+      "padding:12px 16px;border-radius:10px;font-size:13px;line-height:1.65",
+      "box-shadow:0 6px 20px rgba(0,0,0,0.35);max-width:320px;width:320px;pointer-events:auto",
       "transition:opacity .15s"
     ].join(";");
     tip.innerHTML = `<strong style="font-size:15px">${word}</strong><br><span style="opacity:.6;font-size:12px">查询中…</span>`;
@@ -114,24 +114,91 @@ const _tts = {
     this._tooltipEl = tip;
 
     const rect = anchorEl.getBoundingClientRect();
-    const tw = 240;
+    const tw = 320;
     let left = rect.left + rect.width / 2 - tw / 2;
     left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
     const top = rect.bottom + 8;
     tip.style.left = left + "px";
     tip.style.top = top + "px";
 
-    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|zh-CN`)
+    const POS_ZH = { noun:"名词", verb:"动词", adjective:"形容词", adverb:"副词", pronoun:"代词", preposition:"介词", conjunction:"连词", interjection:"感叹词" };
+    const MAX_DEFS = 4;
+
+    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`)
       .then(r => r.json())
-      .then(data => {
-        const zh = data?.responseData?.translatedText;
-        if (tip.isConnected) tip.innerHTML = `<strong style="font-size:15px">${word}</strong><br><span style="color:#7dd3fc">${zh || "无结果"}</span>`;
+      .then(async data => {
+        if (!tip.isConnected) return;
+
+        if (!Array.isArray(data) || !data.length) {
+          const mm = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|zh-CN`).then(r => r.json()).catch(() => null);
+          const zh = mm?.responseData?.translatedText || "";
+          tip.innerHTML = `<strong style="font-size:15px">${word}</strong><br>` + (zh && zh !== word ? `<span style="color:#7dd3fc">${zh}</span>` : `<span style="opacity:.5;font-size:12px">未找到释义</span>`);
+          return;
+        }
+
+        const entry = data[0];
+        const phonetic = entry.phonetic || entry.phonetics?.find(p => p.text)?.text || "";
+
+        const defs = [];
+        let totalDefs = 0;
+        for (const m of entry.meanings || []) {
+          const pos = POS_ZH[m.partOfSpeech] || m.partOfSpeech;
+          for (const d of m.definitions || []) {
+            totalDefs++;
+            if (defs.length < MAX_DEFS) {
+              const def = d.definition.length > 110 ? d.definition.slice(0, 108) + "…" : d.definition;
+              defs.push({ pos, def });
+            }
+          }
+        }
+
+        const translations = await Promise.all(
+          defs.map(d =>
+            fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(d.def)}&langpair=en|zh-CN`)
+              .then(r => r.json()).then(mm => mm?.responseData?.translatedText || "").catch(() => "")
+          )
+        );
+
+        if (!tip.isConnected) return;
+
+        let html = `<strong style="font-size:15px">${word}</strong>`;
+        if (phonetic) html += `&nbsp;<span style="opacity:.45;font-size:12px">${phonetic}</span>`;
+        html += `<div style="margin-top:7px;border-top:1px solid rgba(255,255,255,.12);padding-top:7px">`;
+        defs.forEach((d, i) => {
+          html += `<div style="margin-bottom:${i < defs.length - 1 ? 9 : 0}px">`;
+          html += `<div style="display:flex;align-items:flex-start;gap:6px">`;
+          html += `<div style="flex:1"><span style="background:#1e3a5f;color:#94a3b8;font-size:10px;padding:1px 5px;border-radius:3px;margin-right:5px">${d.pos}</span><span style="color:#cbd5e1;font-size:12px">${d.def}</span></div>`;
+          html += `<button data-tts-def="${i}" style="flex-shrink:0;background:none;border:none;color:#475569;font-size:14px;cursor:pointer;padding:0 2px;line-height:1" title="朗读">🔊</button>`;
+          html += `</div>`;
+          if (translations[i]) html += `<div style="color:#7dd3fc;font-size:13px;margin-top:2px;padding-left:3px">→ ${translations[i]}</div>`;
+          html += `</div>`;
+        });
+        if (totalDefs > MAX_DEFS) {
+          html += `<div style="margin-top:5px;opacity:.4;font-size:11px">…还有 ${totalDefs - MAX_DEFS} 条释义未显示</div>`;
+        }
+        html += `</div>`;
+        tip.innerHTML = html;
+
+        tip.querySelectorAll("[data-tts-def]").forEach(btn => {
+          btn.addEventListener("click", e => {
+            e.stopPropagation();
+            const idx = parseInt(btn.dataset.ttsDef);
+            const text = defs[idx]?.def;
+            if (!text) return;
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = "en-US";
+            u.rate = 0.82;
+            if (_tts._voice) u.voice = _tts._voice;
+            window.speechSynthesis.speak(u);
+          });
+        });
       })
       .catch(() => { if (tip.isConnected) tip.innerHTML = `<strong>${word}</strong><br><span style="opacity:.5">查询失败</span>`; });
 
-    const dismiss = () => { tip.remove(); document.removeEventListener("click", dismiss); };
+    const dismiss = e => { if (!tip.contains(e.target)) { tip.remove(); document.removeEventListener("click", dismiss); } };
     setTimeout(() => document.addEventListener("click", dismiss), 150);
-    setTimeout(() => tip.remove(), 7000);
+    setTimeout(() => { tip.remove(); document.removeEventListener("click", dismiss); }, 20000);
   }
 };
 
