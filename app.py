@@ -12920,6 +12920,49 @@ class AppHandler(SimpleHTTPRequestHandler):
                 self.send_json(200, {"ok": True})
                 return
 
+            if method == "GET" and path == "/api/dict":
+                from urllib.parse import quote as _quote
+                word = (qs.get("q", [""])[0] or "").strip()[:60]
+                if not word:
+                    self.send_json(400, {"error": "missing q"})
+                    return
+                try:
+                    url = (
+                        "https://translate.googleapis.com/translate_a/single"
+                        f"?client=gtx&sl=en&tl=zh-CN&dt=bd&dt=t&dj=1&q={_quote(word)}"
+                    )
+                    req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                    with urlopen(req, timeout=6) as resp:
+                        raw = resp.read().decode("utf-8")
+                    raw_data = json.loads(raw)
+                    # Build concise defs: [{pos, zh}]
+                    defs = []
+                    pos_map = {
+                        "verb": "v", "noun": "n", "adjective": "adj",
+                        "adverb": "adv", "preposition": "prep",
+                        "conjunction": "conj", "interjection": "int",
+                        "pronoun": "pron", "numeral": "num",
+                    }
+                    for d in raw_data.get("dict", []):
+                        pos = pos_map.get(d.get("pos", ""), d.get("pos", ""))
+                        # Sort entries by score, take top 4 regardless of threshold
+                        entries = sorted(d.get("entry", []), key=lambda e: e.get("score", 0), reverse=True)
+                        top = [e["word"] for e in entries[:4]]
+                        if not top:
+                            top = (d.get("terms") or [])[:4]
+                        if top:
+                            defs.append({"pos": pos, "zh": "；".join(top)})
+                    # Fallback: use simple translation when no dict entries
+                    if not defs:
+                        sents = raw_data.get("sentences", [])
+                        trans = sents[0].get("trans", "") if sents else ""
+                        if trans and trans.lower() != word.lower():
+                            defs.append({"pos": "译", "zh": trans})
+                    self.send_json(200, {"word": word, "defs": defs})
+                except Exception as e:
+                    self.send_json(502, {"error": f"dict error: {e}"})
+                return
+
             self.send_json(404, {"error": f"Unknown API endpoint: {path}"})
 
         except ValueError as e:
