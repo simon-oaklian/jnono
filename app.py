@@ -12922,43 +12922,67 @@ class AppHandler(SimpleHTTPRequestHandler):
 
             if method == "GET" and path == "/api/dict":
                 from urllib.parse import quote as _quote
+                import re as _re
                 word = (qs.get("q", [""])[0] or "").strip()[:60]
                 if not word:
                     self.send_json(400, {"error": "missing q"})
                     return
                 try:
-                    url = (
-                        "https://translate.googleapis.com/translate_a/single"
-                        f"?client=gtx&sl=en&tl=zh-CN&dt=bd&dt=t&dj=1&q={_quote(word)}"
-                    )
-                    req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
-                    with urlopen(req, timeout=6) as resp:
-                        raw = resp.read().decode("utf-8")
-                    raw_data = json.loads(raw)
-                    # Build concise defs: [{pos, zh}]
+                    # Primary: ECDICT local SQLite
+                    _ECDICT = ROOT / "data" / "stardict.db"
                     defs = []
-                    pos_map = {
-                        "verb": "v", "noun": "n", "adjective": "adj",
-                        "adverb": "adv", "preposition": "prep",
-                        "conjunction": "conj", "interjection": "int",
-                        "pronoun": "pron", "numeral": "num",
-                    }
-                    for d in raw_data.get("dict", []):
-                        pos = pos_map.get(d.get("pos", ""), d.get("pos", ""))
-                        # Sort entries by score, take top 4 regardless of threshold
-                        entries = sorted(d.get("entry", []), key=lambda e: e.get("score", 0), reverse=True)
-                        top = [e["word"] for e in entries[:4]]
-                        if not top:
-                            top = (d.get("terms") or [])[:4]
-                        if top:
-                            defs.append({"pos": pos, "zh": "；".join(top)})
-                    # Fallback: use simple translation when no dict entries
+                    phonetic = ""
+                    if _ECDICT.exists():
+                        with sqlite3.connect(str(_ECDICT)) as ec:
+                            row = ec.execute(
+                                "SELECT phonetic, translation FROM stardict WHERE word=? COLLATE NOCASE LIMIT 1",
+                                (word,)
+                            ).fetchone()
+                        if row:
+                            phonetic = (row[0] or "").lstrip("'").strip()
+                            for line in (row[1] or "").split("\n"):
+                                line = line.strip()
+                                # Match "n. term1, term2" or "a. term" or "vt. term"
+                                m = _re.match(r'^([a-zA-Z]+)\.\s+(.+)', line)
+                                if m:
+                                    pos, zh_raw = m.group(1).lower(), m.group(2)
+                                    # Strip bracketed extras like [计] [机] at start of terms
+                                    zh_raw = _re.sub(r'^\[.+?\]\s*', '', zh_raw)
+                                    # Take first 4 comma-separated terms
+                                    terms = [t.strip() for t in _re.split(r'[,，]', zh_raw)][:4]
+                                    terms = [t for t in terms if t]
+                                    if terms:
+                                        defs.append({"pos": pos, "zh": "，".join(terms)})
+                                elif line.startswith("["):
+                                    # "[机] 烟道, 烟管" style — append to last def or skip
+                                    pass
+                    # Fallback: Google Translate when not in ECDICT
                     if not defs:
-                        sents = raw_data.get("sentences", [])
-                        trans = sents[0].get("trans", "") if sents else ""
-                        if trans and trans.lower() != word.lower():
-                            defs.append({"pos": "译", "zh": trans})
-                    self.send_json(200, {"word": word, "defs": defs})
+                        url = (
+                            "https://translate.googleapis.com/translate_a/single"
+                            f"?client=gtx&sl=en&tl=zh-CN&dt=bd&dt=t&dj=1&q={_quote(word)}"
+                        )
+                        req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                        with urlopen(req, timeout=6) as resp:
+                            raw_data = json.loads(resp.read().decode("utf-8"))
+                        pos_map = {
+                            "verb": "v", "noun": "n", "adjective": "adj",
+                            "adverb": "adv", "preposition": "prep",
+                            "conjunction": "conj", "interjection": "int",
+                            "pronoun": "pron", "numeral": "num",
+                        }
+                        for d in raw_data.get("dict", []):
+                            pos = pos_map.get(d.get("pos", ""), d.get("pos", ""))
+                            entries = sorted(d.get("entry", []), key=lambda e: e.get("score", 0), reverse=True)
+                            top = [e["word"] for e in entries[:4]] or (d.get("terms") or [])[:4]
+                            if top:
+                                defs.append({"pos": pos, "zh": "；".join(top)})
+                        if not defs:
+                            sents = raw_data.get("sentences", [])
+                            trans = sents[0].get("trans", "") if sents else ""
+                            if trans and trans.lower() != word.lower():
+                                defs.append({"pos": "译", "zh": trans})
+                    self.send_json(200, {"word": word, "phonetic": phonetic, "defs": defs})
                 except Exception as e:
                     self.send_json(502, {"error": f"dict error: {e}"})
                 return

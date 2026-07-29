@@ -135,6 +135,7 @@ const _tts = {
         }
 
         let html = `<strong style="font-size:15px">${word}</strong>`;
+        if (data.phonetic) html += `&nbsp;<span style="opacity:.45;font-size:12px">/${data.phonetic}/</span>`;
         html += `<div style="margin-top:7px;border-top:1px solid rgba(255,255,255,.12);padding-top:7px">`;
         defs.forEach((d, i) => {
           const posLabel = POS_ZH[d.pos] || d.pos;
