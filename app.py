@@ -12928,35 +12928,39 @@ class AppHandler(SimpleHTTPRequestHandler):
                     self.send_json(400, {"error": "missing q"})
                     return
                 try:
-                    # Primary: ECDICT local SQLite
-                    _ECDICT = ROOT / "data" / "stardict.db"
                     defs = []
                     phonetic = ""
-                    if _ECDICT.exists():
-                        with sqlite3.connect(str(_ECDICT)) as ec:
-                            row = ec.execute(
-                                "SELECT phonetic, translation FROM stardict WHERE word=? COLLATE NOCASE LIMIT 1",
-                                (word,)
-                            ).fetchone()
-                        if row:
-                            phonetic = (row[0] or "").lstrip("'").strip()
-                            for line in (row[1] or "").split("\n"):
-                                line = line.strip()
-                                # Match "n. term1, term2" or "a. term" or "vt. term"
-                                m = _re.match(r'^([a-zA-Z]+)\.\s+(.+)', line)
-                                if m:
-                                    pos, zh_raw = m.group(1).lower(), m.group(2)
-                                    # Strip bracketed extras like [计] [机] at start of terms
-                                    zh_raw = _re.sub(r'^\[.+?\]\s*', '', zh_raw)
-                                    # Take first 4 comma-separated terms
-                                    terms = [t.strip() for t in _re.split(r'[,，]', zh_raw)][:4]
-                                    terms = [t for t in terms if t]
-                                    if terms:
-                                        defs.append({"pos": pos, "zh": "，".join(terms)})
-                                elif line.startswith("["):
-                                    # "[机] 烟道, 烟管" style — append to last def or skip
-                                    pass
-                    # Fallback: Google Translate when not in ECDICT
+                    # 1st priority: construction-specific vocabulary
+                    with db_conn() as _dbc:
+                        _row = _dbc.execute(
+                            "SELECT phonetic, defs_json FROM construction_vocab WHERE word=? COLLATE NOCASE LIMIT 1",
+                            (word,)
+                        ).fetchone()
+                    if _row:
+                        phonetic = (_row[0] or "").strip()
+                        defs = json.loads(_row[1])
+                    # 2nd priority: ECDICT general dictionary
+                    if not defs:
+                        _ECDICT = ROOT / "data" / "stardict.db"
+                        if _ECDICT.exists():
+                            with sqlite3.connect(str(_ECDICT)) as ec:
+                                row = ec.execute(
+                                    "SELECT phonetic, translation FROM stardict WHERE word=? COLLATE NOCASE LIMIT 1",
+                                    (word,)
+                                ).fetchone()
+                            if row:
+                                phonetic = (row[0] or "").lstrip("'").strip()
+                                for line in (row[1] or "").split("\n"):
+                                    line = line.strip()
+                                    m = _re.match(r'^([a-zA-Z]+)\.\s+(.+)', line)
+                                    if m:
+                                        pos, zh_raw = m.group(1).lower(), m.group(2)
+                                        zh_raw = _re.sub(r'^\[.+?\]\s*', '', zh_raw)
+                                        terms = [t.strip() for t in _re.split(r'[,，]', zh_raw)][:4]
+                                        terms = [t for t in terms if t]
+                                        if terms:
+                                            defs.append({"pos": pos, "zh": "，".join(terms)})
+                    # 3rd priority: Google Translate fallback
                     if not defs:
                         url = (
                             "https://translate.googleapis.com/translate_a/single"
