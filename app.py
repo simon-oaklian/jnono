@@ -5326,6 +5326,14 @@ def init_db() -> None:
               PRIMARY KEY(user_id, exam_id, question_id)
             );
 
+            CREATE TABLE IF NOT EXISTS bookmarks (
+              user_id INTEGER NOT NULL,
+              exam_id TEXT NOT NULL,
+              question_id TEXT NOT NULL,
+              created_at TEXT NOT NULL,
+              PRIMARY KEY(user_id, exam_id, question_id)
+            );
+
             CREATE TABLE IF NOT EXISTS progress_events (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               user_id INTEGER NOT NULL,
@@ -9277,6 +9285,65 @@ class AppHandler(SimpleHTTPRequestHandler):
                 for row in rows:
                     mapped.setdefault(row["exam_id"], []).append(row["question_id"])
                 self.send_json(200, mapped)
+                return
+
+            if method == "GET" and path == "/api/progress/bookmarks":
+                user = self.require_user()
+                if not user:
+                    return
+                exam_id = (qs.get("exam_id") or qs.get("examId") or [""])[0]
+                with db_conn() as conn:
+                    if exam_id:
+                        rows = conn.execute(
+                            "SELECT question_id FROM bookmarks WHERE user_id=? AND exam_id=?",
+                            (user["id"], exam_id),
+                        ).fetchall()
+                        self.send_json(200, {"examId": exam_id, "question_ids": [r["question_id"] for r in rows]})
+                        return
+                    rows = conn.execute(
+                        "SELECT exam_id, question_id FROM bookmarks WHERE user_id=?",
+                        (user["id"],),
+                    ).fetchall()
+                    mapped: dict[str, list[str]] = {}
+                    for row in rows:
+                        mapped.setdefault(row["exam_id"], []).append(row["question_id"])
+                    self.send_json(200, mapped)
+                return
+
+            if method == "POST" and path == "/api/progress/bookmarks":
+                user = self.require_user()
+                if not user:
+                    return
+                body = self.read_json()
+                exam_id = str(body.get("exam_id") or "").strip()
+                question_id = str(body.get("question_id") or "").strip()
+                if not exam_id or not question_id:
+                    self.send_json(400, {"error": "exam_id and question_id required"})
+                    return
+                with db_conn() as conn:
+                    conn.execute(
+                        "INSERT OR IGNORE INTO bookmarks(user_id, exam_id, question_id, created_at) VALUES(?,?,?,?)",
+                        (user["id"], exam_id, question_id, now_iso()),
+                    )
+                self.send_json(200, {"ok": True})
+                return
+
+            if method == "DELETE" and path == "/api/progress/bookmarks":
+                user = self.require_user()
+                if not user:
+                    return
+                body = self.read_json()
+                exam_id = str(body.get("exam_id") or "").strip()
+                question_id = str(body.get("question_id") or "").strip()
+                if not exam_id or not question_id:
+                    self.send_json(400, {"error": "exam_id and question_id required"})
+                    return
+                with db_conn() as conn:
+                    conn.execute(
+                        "DELETE FROM bookmarks WHERE user_id=? AND exam_id=? AND question_id=?",
+                        (user["id"], exam_id, question_id),
+                    )
+                self.send_json(200, {"ok": True})
                 return
 
             if method == "POST" and path == "/api/progress/reset":

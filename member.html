@@ -227,6 +227,7 @@
               <div class="catalog-actions">
                 <button class="btn primary" id="startBtn">开始训练</button>
                 <button class="btn" id="wrongBookBtn">刷错题</button>
+                <button class="btn" id="starBookBtn">★ 刷收藏</button>
                 <button class="btn ghost" id="resetProgressBtn">清空进度</button>
               </div>
               <p id="catalogEmptyState" class="catalog-empty-note hidden"></p>
@@ -292,6 +293,7 @@
               <div class="quiz-actions">
                 <button class="btn" id="prevBtn">上一题</button>
                 <button class="btn" id="nextBtn">下一题</button>
+                <button class="btn ghost" id="bookmarkBtn" title="收藏此题">☆ 收藏</button>
                 <button class="btn primary" id="submitBtn">交卷</button>
               </div>
             </section>
@@ -573,7 +575,7 @@
     </div>
   </div>
 
-  <script src="/member.js?v=20260716-mock-weights" type="module"></script>
+  <script src="/member.js?v=20260730-bookmark" type="module"></script>
 
   <div id="quizShellOverlay" aria-hidden="true">
     <div class="quiz-shell-header">
@@ -602,6 +604,7 @@
     <div class="quiz-shell-footer">
       <button type="button" class="btn" id="quizShellPrevBtn">上一题</button>
       <button type="button" class="btn" id="quizShellNextBtn">下一题</button>
+      <button type="button" class="btn ghost" id="quizShellBookmarkBtn" title="收藏此题">☆ 收藏</button>
       <button type="button" class="btn primary" id="quizShellSubmitBtnBottom">交卷</button>
     </div>
   </div>

@@ -55,7 +55,8 @@ const state = {
   onboardingStep: 1,
   sessionSectionCode: "",
   sessionSectionName: "",
-  ttsEnabled: false
+  ttsEnabled: false,
+  bookmarkedIds: new Set()
 };
 
 // --- TTS (Web Speech API) ---
@@ -214,6 +215,9 @@ const bilingualToggleWrap = document.getElementById("bilingualToggleWrap");
 const showChineseToggle = document.getElementById("showChineseToggle");
 const startBtn = document.getElementById("startBtn");
 const wrongBookBtn = document.getElementById("wrongBookBtn");
+const starBookBtn = document.getElementById("starBookBtn");
+const bookmarkBtn = document.getElementById("bookmarkBtn");
+const quizShellBookmarkBtn = document.getElementById("quizShellBookmarkBtn");
 const resetProgressBtn = document.getElementById("resetProgressBtn");
 const catalogEmptyState = document.getElementById("catalogEmptyState");
 
@@ -964,6 +968,15 @@ function bindEvents() {
   wrongBookBtn.addEventListener("click", () => {
     void startCategoryQuiz(true);
   });
+  starBookBtn?.addEventListener("click", () => {
+    void startBookmarkQuiz();
+  });
+  bookmarkBtn?.addEventListener("click", () => {
+    void toggleBookmark();
+  });
+  quizShellBookmarkBtn?.addEventListener("click", () => {
+    void toggleBookmark();
+  });
   // 首页"下一步训练"卡的刷错题直达入口
   document.getElementById("continueWrongBookBtn")?.addEventListener("click", () => {
     if (practiceMode && practiceMode.value === "mock") {
@@ -1670,6 +1683,83 @@ async function startCategoryQuiz(useWrongBook) {
   beginQuiz();
 }
 
+async function loadBookmarks() {
+  const examId = state.currentExamId;
+  if (!examId || !state.authToken) return;
+  try {
+    const res = await apiFetch(`/api/progress/bookmarks?exam_id=${encodeURIComponent(examId)}`, { token: state.authToken });
+    state.bookmarkedIds = new Set(res.question_ids || []);
+  } catch {
+    state.bookmarkedIds = new Set();
+  }
+  renderBookmarkButton();
+}
+
+async function toggleBookmark() {
+  const q = state.quizQuestions[state.currentIndex];
+  if (!q) return;
+  const qid = String(q.id || q.question_id || "").trim();
+  if (!qid) return;
+  const examId = state.currentExamId;
+  const isBookmarked = state.bookmarkedIds.has(qid);
+  if (isBookmarked) {
+    state.bookmarkedIds.delete(qid);
+    renderBookmarkButton();
+    try { await apiFetch("/api/progress/bookmarks", { method: "DELETE", token: state.authToken, body: { exam_id: examId, question_id: qid } }); }
+    catch { state.bookmarkedIds.add(qid); renderBookmarkButton(); }
+  } else {
+    state.bookmarkedIds.add(qid);
+    renderBookmarkButton();
+    try { await apiFetch("/api/progress/bookmarks", { method: "POST", token: state.authToken, body: { exam_id: examId, question_id: qid } }); }
+    catch { state.bookmarkedIds.delete(qid); renderBookmarkButton(); }
+  }
+}
+
+function renderBookmarkButton() {
+  const q = state.quizQuestions?.[state.currentIndex];
+  const qid = q ? String(q.id || q.question_id || "").trim() : "";
+  const marked = qid && state.bookmarkedIds.has(qid);
+  const label = marked ? "★ 已收藏" : "☆ 收藏";
+  if (bookmarkBtn) {
+    bookmarkBtn.textContent = label;
+    bookmarkBtn.style.color = marked ? "#f5a623" : "";
+    bookmarkBtn.style.borderColor = marked ? "#f5a623" : "";
+  }
+  if (quizShellBookmarkBtn) {
+    quizShellBookmarkBtn.textContent = label;
+    quizShellBookmarkBtn.style.color = marked ? "#f5a623" : "";
+    quizShellBookmarkBtn.style.borderColor = marked ? "#f5a623" : "";
+  }
+}
+
+async function startBookmarkQuiz() {
+  const exam = getCurrentExam();
+  if (!exam) { showCatalogEmptyState(); return; }
+  await loadBookmarks();
+  const bookmarkIds = [...state.bookmarkedIds];
+  if (!bookmarkIds.length) {
+    alert("当前题库还没有收藏题。练习时点击「☆ 收藏」标记重要或不理解的题目。");
+    return;
+  }
+  const allQuestions = exam.questions.filter((q) => q && (q.id || q.question_id));
+  const bookmarked = allQuestions.filter((q) => bookmarkIds.includes(q.id || q.question_id));
+  if (!bookmarked.length) {
+    alert("当前题库下没有收藏题。");
+    return;
+  }
+  state.quizQuestions = shuffle([...bookmarked]);
+  state.currentIndex = 0;
+  state.answers = {};
+  state.timerMode = "none";
+  state.activeMode = "category";
+  state.mockSpec = null;
+  state.sessionSectionCode = "";
+  state.sessionSectionName = "收藏题";
+  hideCatalogEmptyState();
+  beginQuiz();
+  openQuizShell();
+}
+
 // 分层抽题：按分类权重分配题数（后台配置官方比例优先，否则按题库占比），层内随机。
 // 目的：每次模拟考的章节分布稳定、贴近 CSLB 官方结构，而不是纯随机导致分布漂移。
 function sampleMockQuestions(exam, pool, targetCount) {
@@ -1765,6 +1855,7 @@ function beginQuiz() {
   quizSection.classList.remove("hidden");
   hideCatalogEmptyState();
   persistContinueInProgress();
+  void loadBookmarks();
   renderQuestion();
 }
 
@@ -1991,6 +2082,7 @@ function renderQuestion() {
   } else if (state.timerMode === "none") {
     timerWrap.classList.add("hidden");
   }
+  renderBookmarkButton();
 }
 
 function getOfficialMockConfig(exam) {
@@ -3757,6 +3849,7 @@ function onContinueLearningClick() {
     setMemberSideNavActive(targetMode === "mock" ? "mock" : "practice");
     updatePracticeContext();
     scrollToMemberTarget("catalog");
+    openQuizShell();
     return;
   }
   if (practiceMode) {
@@ -4806,6 +4899,7 @@ function updateActionButtons() {
   startBtn.disabled = !hasExam;
   // 刷错题在模拟考模式下也可用（错题流程独立于模考，见 startCategoryQuiz）
   wrongBookBtn.disabled = !hasExam;
+  if (starBookBtn) starBookBtn.disabled = !hasExam;
 }
 
 function startMembershipSync() {
