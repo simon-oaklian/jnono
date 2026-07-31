@@ -989,6 +989,18 @@ function bindEvents() {
       void startCategoryQuiz(true);
     }
   });
+  // 首页"下一步训练"卡的刷收藏直达入口
+  document.getElementById("continueStarBookBtn")?.addEventListener("click", () => {
+    if (practiceMode && practiceMode.value === "mock") {
+      practiceMode.value = "category";
+      onModeChange();
+    }
+    if (getCurrentExam()) {
+      void startBookmarkQuiz();
+    } else {
+      jumpToTrainingSection("practice");
+    }
+  });
   prevBtn.addEventListener("click", () => moveQuestion(-1));
   nextBtn.addEventListener("click", () => moveQuestion(1));
   submitBtn.addEventListener("click", () => {

@@ -124,7 +124,10 @@
                     <p id="continueLearningMeta" class="continue-meta">系统会根据最近练习自动推荐下一步。</p>
                     <button class="btn primary" id="continueLearningBtn">继续学习</button>
                     <button class="btn" id="continueAltBtn" style="display:none;margin-top:8px;width:100%"></button>
-                    <button class="btn" id="continueWrongBookBtn" style="margin-top:8px;width:100%">📕 刷错题</button>
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                      <button class="btn" id="continueWrongBookBtn" style="flex:1">📕 刷错题</button>
+                      <button class="btn" id="continueStarBookBtn" style="flex:1">★ 刷收藏</button>
+                    </div>
                   </div>
                 </section>
 
@@ -575,7 +578,7 @@
     </div>
   </div>
 
-  <script src="/member.js?v=20260731-session-sync" type="module"></script>
+  <script src="/member.js?v=20260731-bookmark-dashboard" type="module"></script>
 
   <div id="quizShellOverlay" aria-hidden="true">
     <div class="quiz-shell-header">
