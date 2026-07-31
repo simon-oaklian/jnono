@@ -910,6 +910,7 @@ async function init() {
     onModeChange();
     startMembershipSync();
     await renderProgress();
+    await loadSessionFromServer();
     await loadAccountProfile({ silent: true });
     renderAccountSettingsCenter();
     setMemberView("dashboard", { scroll: false });
@@ -2574,6 +2575,38 @@ function readContinueState() {
 function writeContinueState(data) {
   try {
     localStorage.setItem(getContinueStorageKey(), JSON.stringify(data || {}));
+  } catch {}
+  scheduleSyncSession();
+}
+
+let _syncSessionTimer = null;
+function scheduleSyncSession() {
+  clearTimeout(_syncSessionTimer);
+  _syncSessionTimer = setTimeout(syncSessionToServer, 2000);
+}
+
+async function syncSessionToServer() {
+  if (!state.authToken) return;
+  try {
+    const data = readContinueState();
+    await apiFetch("/api/progress/session", { method: "PUT", token: state.authToken, body: data });
+  } catch {}
+}
+
+async function loadSessionFromServer() {
+  if (!state.authToken) return;
+  try {
+    const res = await apiFetch("/api/progress/session", { token: state.authToken });
+    const serverState = res?.state;
+    if (!serverState || typeof serverState !== "object") return;
+    const localState = readContinueState();
+    const serverTs = Number(serverState?.inProgress?.updatedAt || serverState?.recent?.updatedAt || 0);
+    const localTs = Number(localState?.inProgress?.updatedAt || localState?.recent?.updatedAt || 0);
+    if (serverTs > localTs) {
+      try { localStorage.setItem(getContinueStorageKey(), JSON.stringify(serverState)); } catch {}
+      updateContinueLearningPanel();
+      updateLearningPathPanels();
+    }
   } catch {}
 }
 

@@ -5334,6 +5334,12 @@ def init_db() -> None:
               PRIMARY KEY(user_id, exam_id, question_id)
             );
 
+            CREATE TABLE IF NOT EXISTS session_state (
+              user_id INTEGER PRIMARY KEY,
+              state_json TEXT NOT NULL DEFAULT '{}',
+              updated_at TEXT NOT NULL
+            );
+
             CREATE TABLE IF NOT EXISTS progress_events (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               user_id INTEGER NOT NULL,
@@ -9346,6 +9352,40 @@ class AppHandler(SimpleHTTPRequestHandler):
                 self.send_json(200, {"ok": True})
                 return
 
+            if method == "GET" and path == "/api/progress/session":
+                user = self.require_user()
+                if not user:
+                    return
+                with db_conn() as conn:
+                    row = conn.execute(
+                        "SELECT state_json, updated_at FROM session_state WHERE user_id=?",
+                        (user["id"],),
+                    ).fetchone()
+                if row:
+                    try:
+                        state_data = json.loads(row["state_json"])
+                    except Exception:
+                        state_data = {}
+                    self.send_json(200, {"state": state_data, "updatedAt": row["updated_at"]})
+                else:
+                    self.send_json(200, {"state": {}, "updatedAt": None})
+                return
+
+            if method == "PUT" and path == "/api/progress/session":
+                user = self.require_user()
+                if not user:
+                    return
+                body = self.read_json()
+                state_json = json.dumps(body, ensure_ascii=False)
+                ts = now_iso()
+                with db_conn() as conn:
+                    conn.execute(
+                        "INSERT OR REPLACE INTO session_state(user_id, state_json, updated_at) VALUES(?,?,?)",
+                        (user["id"], state_json, ts),
+                    )
+                self.send_json(200, {"ok": True, "updatedAt": ts})
+                return
+
             if method == "POST" and path == "/api/progress/reset":
                 user = self.require_user()
                 if not user:
@@ -9354,6 +9394,7 @@ class AppHandler(SimpleHTTPRequestHandler):
                     conn.execute("DELETE FROM progress_summary WHERE user_id=?", (user["id"],))
                     conn.execute("DELETE FROM wrong_book WHERE user_id=?", (user["id"],))
                     conn.execute("DELETE FROM progress_events WHERE user_id=?", (user["id"],))
+                    conn.execute("DELETE FROM session_state WHERE user_id=?", (user["id"],))
                 self.send_json(200, {"ok": True})
                 return
 
