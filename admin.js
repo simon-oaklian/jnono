@@ -867,7 +867,7 @@ function renderUserAssignmentFields(user) {
   if (userAssignMembershipTierInput) userAssignMembershipTierInput.value = normalizedTier;
   if (userAssignAccountStatusInput) userAssignAccountStatusInput.value = normalizedStatus;
   if (userAssignMembershipExpiresInput) {
-    const rawExpiry = user?.entitlements?.aiExpiresAt || user?.entitlements?.bilingualExpiresAt || "";
+    const rawExpiry = user?.aiEntitlement?.expiresAt || user?.bilingualEntitlement?.expiresAt || "";
     userAssignMembershipExpiresInput.value = toDateInputValue(rawExpiry);
   }
   const progress = user?.licensingProgress && typeof user.licensingProgress === "object" ? user.licensingProgress : {};
@@ -912,7 +912,7 @@ function renderUserAssignmentFields(user) {
   setMemberSummaryText(memberSummaryExams, examsText, "未分配");
   setMemberSummaryText(
     memberSummaryExpires,
-    user?.entitlements?.aiExpiresAt || user?.entitlements?.bilingualExpiresAt || "",
+    user?.aiEntitlement?.expiresAt || user?.bilingualEntitlement?.expiresAt || "",
     "未设置"
   );
   setMemberSummaryText(memberSummaryNotes, progress?.notes || "", "无");
@@ -3876,7 +3876,7 @@ async function renderUsers() {
       </td>
       <td><span class="status-chip status-chip-plan">${escapeHtml(tierLabel)}</span></td>
       <td><span class="status-chip ${accountStatus === "suspended" ? "status-chip-warn" : "status-chip-ok"}">${escapeHtml(statusLabel)}</span></td>
-      <td>${escapeHtml(toDateInputValue(user?.entitlements?.aiExpiresAt || user?.entitlements?.bilingualExpiresAt || "") || "--")}</td>
+      <td>${escapeHtml(toDateInputValue(user?.aiEntitlement?.expiresAt || user?.bilingualEntitlement?.expiresAt || "") || "--")}</td>
       <td title="${escapeHtml(examsSummary)}">${escapeHtml(examsSummary)}</td>
       <td>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
