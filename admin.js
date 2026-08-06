@@ -867,12 +867,8 @@ function renderUserAssignmentFields(user) {
   if (userAssignMembershipTierInput) userAssignMembershipTierInput.value = normalizedTier;
   if (userAssignAccountStatusInput) userAssignAccountStatusInput.value = normalizedStatus;
   if (userAssignMembershipExpiresInput) {
-    userAssignMembershipExpiresInput.value = String(
-      user?.entitlements?.aiExpiresAt ||
-        user?.entitlements?.bilingualExpiresAt ||
-        user?.membershipUpdatedAt ||
-        ""
-    );
+    const rawExpiry = user?.entitlements?.aiExpiresAt || user?.entitlements?.bilingualExpiresAt || "";
+    userAssignMembershipExpiresInput.value = toDateInputValue(rawExpiry);
   }
   const progress = user?.licensingProgress && typeof user.licensingProgress === "object" ? user.licensingProgress : {};
   const contentOverrides =
@@ -1096,6 +1092,15 @@ async function onSaveUserAssignment() {
 
   if (hasMemberTierInput) {
     payload.membershipTier = normalizeMembershipTier(userAssignMembershipTierInput?.value || "free");
+  }
+
+  if (userAssignMembershipExpiresInput) {
+    const expiryDate = normalizeDateInput(userAssignMembershipExpiresInput.value || "");
+    if (expiryDate) {
+      payload.entitlements = payload.entitlements || {};
+      payload.entitlements.aiExpiresAt = expiryDate;
+      payload.entitlements.bilingualExpiresAt = expiryDate;
+    }
   }
 
   if (hasAccountStatusInput) {
