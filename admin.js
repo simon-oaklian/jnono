@@ -3821,7 +3821,7 @@ function renderUsersHeader() {
   if (!usersHeadRow) return;
   usersHeadRow.innerHTML = "";
 
-  const headers = ["用户", "邮箱", "会员计划", "账号状态", "已分配考试", "操作"];
+  const headers = ["用户", "邮箱", "会员计划", "账号状态", "到期时间", "已分配考试", "操作"];
   for (const title of headers) {
     const th = document.createElement("th");
     th.textContent = title;
@@ -3839,7 +3839,7 @@ async function renderUsers() {
   usersTbody.innerHTML = "";
   adminSaveMsg.classList.add("hidden");
   renderUsersHeader();
-  const columnCount = 6;
+  const columnCount = 7;
   if (!visibleUsers.length) {
     const tr = document.createElement("tr");
     tr.innerHTML = `<td colspan="${columnCount}">${
@@ -3876,6 +3876,7 @@ async function renderUsers() {
       </td>
       <td><span class="status-chip status-chip-plan">${escapeHtml(tierLabel)}</span></td>
       <td><span class="status-chip ${accountStatus === "suspended" ? "status-chip-warn" : "status-chip-ok"}">${escapeHtml(statusLabel)}</span></td>
+      <td>${escapeHtml(toDateInputValue(user?.entitlements?.aiExpiresAt || user?.entitlements?.bilingualExpiresAt || "") || "--")}</td>
       <td title="${escapeHtml(examsSummary)}">${escapeHtml(examsSummary)}</td>
       <td>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
