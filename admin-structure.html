@@ -134,7 +134,8 @@
             <h2>考试项目管理</h2>
             <p>仅管理考试结构：项目 / 子项 / 考试类型 / 显示名称 / 绑定分类 / 题量 / 时长 / 是否启用。</p>
           </div>
-          <div class="filters">
+          <p style="margin:0 0 10px;font-size:13px;font-weight:600;color:#3d4d5e;">第一组：项目结构</p>
+          <div class="filters" style="margin-bottom:10px;">
             <label>
               项目代码（industry_key）
               <input id="examIndustryKeyInput" type="text" placeholder="例如：contractor" />
@@ -155,6 +156,9 @@
               子项代码（trade_code，技术考试必填）
               <input id="examTradeCodeInput" type="text" placeholder="例如：c10_electrical" />
             </label>
+          </div>
+          <p style="margin:0 0 10px;font-size:13px;font-weight:600;color:#3d4d5e;">第二组：考试配置</p>
+          <div class="filters" style="margin-bottom:10px;">
             <label>
               考试类型
               <select id="examTypeInput">
@@ -171,6 +175,9 @@
               绑定分类（来自题型分类管理）
               <select id="examCategorySelectInput"></select>
             </label>
+          </div>
+          <p style="margin:0 0 10px;font-size:13px;font-weight:600;color:#3d4d5e;">第三组：题量 / 时长 / 其他</p>
+          <div class="filters">
             <label>
               题量
               <input id="examQuestionCountInput" type="number" value="100" min="1" />
@@ -195,7 +202,7 @@
             <button class="btn primary" id="createExamCatalogBtn">新增考试</button>
             <button class="btn" id="reloadExamCatalogBtn">刷新考试结构</button>
           </div>
-          <div class="table-wrap table-scroll table-scroll-md">
+          <div class="table-wrap table-scroll table-scroll-lg">
             <table class="admin-table" id="examCatalogTable">
               <thead>
                 <tr>
@@ -220,7 +227,7 @@
     </main>
   </div>
 
-  <script src="/admin.js?v=20260818b" type="module"></script>
+  <script src="/admin.js?v=20260818c" type="module"></script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b2bcc256ac741e8b45dcc4ad8f69bef"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

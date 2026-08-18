@@ -808,9 +808,12 @@ function renderProgressExamBindingOptions() {
 function renderProgressUserSearchResults() {
   if (!progressUserSearchResults) return;
   const keyword = String(progressUserSearchInput?.value || "").trim().toLowerCase();
+  if (!keyword) {
+    progressUserSearchResults.innerHTML = "";
+    return;
+  }
   const rows = Array.isArray(state.adminUsers) ? state.adminUsers : [];
   const matched = rows.filter((user) => {
-    if (!keyword) return true;
     const candidates = [
       String(user?.name || "").toLowerCase(),
       String(user?.nickname || "").toLowerCase(),
