@@ -2952,6 +2952,11 @@ body.landing-v2 .lp-consult .lp-consult-copy {
     padding: 10px 12px calc(18px + env(safe-area-inset-bottom, 0));
   }
 
+  body.admin-shell .admin-nav-label,
+  body.admin-shell .admin-nav-divider {
+    display: none;
+  }
+
   body.landing-v2 .lp-hero {
     grid-template-columns: 1fr;
   }
