@@ -11213,6 +11213,10 @@ class AppHandler(SimpleHTTPRequestHandler):
                     if not row:
                         self.send_json(404, {"error": "用户不存在"})
                         return
+                    _protected = {u["email"] for u in DEFAULT_USERS}
+                    if row["email"] in _protected:
+                        self.send_json(403, {"error": "系统默认账号不可删除，重启后会自动重建。"})
+                        return
                     conn.execute("DELETE FROM sessions WHERE user_id = ?", (uid,))
                     conn.execute("DELETE FROM progress_summary WHERE user_id = ?", (uid,))
                     conn.execute("DELETE FROM progress_events WHERE user_id = ?", (uid,))
@@ -11292,6 +11296,13 @@ class AppHandler(SimpleHTTPRequestHandler):
                     if not user_row:
                         self.send_json(404, {"error": "用户不存在"})
                         return
+                    _protected_emails = {u["email"] for u in DEFAULT_USERS}
+                    _req_email = conn.execute("SELECT email FROM users WHERE id=?", (uid,)).fetchone()
+                    if _req_email and _req_email["email"] in _protected_emails:
+                        requested_status = normalize_account_status(data.get("accountStatus"), "active")
+                        if requested_status == "suspended":
+                            self.send_json(403, {"error": "系统默认账号不可归档，重启后会自动重建。"})
+                            return
 
                     current_membership_tier = normalize_membership_tier(
                         user_row["membership_tier"],

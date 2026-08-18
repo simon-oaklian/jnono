@@ -1,5 +1,6 @@
 const ADMIN_TOKEN_KEY = "jnono-admin-token-v1";
 const API_BASE = /^https?:\/\//i.test(window.location.origin || "") ? window.location.origin : "";
+const SYSTEM_EMAILS = new Set(["demo@licensedrill.com", "student@licensedrill.com"]);
 
 const adminWelcome = document.getElementById("adminWelcome");
 const adminLogoutBtn = document.getElementById("adminLogoutBtn");
@@ -564,7 +565,7 @@ async function showAdminPanel(admin) {
   adminPanel?.classList.remove("hidden");
   adminWelcome?.classList.remove("hidden");
   adminLogoutBtn?.classList.remove("hidden");
-  if (adminWelcome) adminWelcome.textContent = admin.name;
+  if (adminWelcome) adminWelcome.textContent = `${admin.name}（${admin.email}）`;
 
   await renderSiteSettings();
   await renderCategories();
@@ -3869,9 +3870,11 @@ async function renderUsers() {
     tr.dataset.userEmail = String(user.email || "");
     tr.dataset.membershipTier = tier;
     tr.dataset.accountStatus = accountStatus;
+    const isSystem = SYSTEM_EMAILS.has(user.email);
     tr.innerHTML = `
       <td>
         <div style="font-weight:600;">${escapeHtml(displayName)}</div>
+        ${isSystem ? `<span class="status-chip" style="font-size:10px;background:#f0f3f8;color:#6b7a8c;border:1px solid #c9d6e8;">系统账号</span>` : ""}
       </td>
       <td>
         <div>${escapeHtml(user.email)}</div>
@@ -3884,8 +3887,10 @@ async function renderUsers() {
       <td>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
           <button type="button" class="btn" data-action="select-user">查看</button>
-          <button type="button" class="btn" data-action="${accountStatus === "suspended" ? "restore-user" : "archive-user"}">${accountStatus === "suspended" ? "恢复" : "归档"}</button>
-          <button type="button" class="btn ghost" data-action="delete-user">删除</button>
+          ${isSystem
+            ? `<span style="font-size:12px;color:#9aabb8;align-self:center;">重启自动重建</span>`
+            : `<button type="button" class="btn" data-action="${accountStatus === "suspended" ? "restore-user" : "archive-user"}">${accountStatus === "suspended" ? "恢复" : "归档"}</button>
+          <button type="button" class="btn ghost" data-action="delete-user">删除</button>`}
         </div>
       </td>
     `;
