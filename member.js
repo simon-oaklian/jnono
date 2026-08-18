@@ -2022,14 +2022,6 @@ function renderQuestion() {
         cap.style.color = "#5f6d82";
         mediaInner.appendChild(cap);
       }
-    } else if (referencesFigure) {
-      mediaBox.classList.remove("hidden");
-      const notice = document.createElement("div");
-      notice.textContent = "This question references a figure, but no image is attached yet.";
-      notice.style.color = "#7a5a00";
-      notice.style.fontSize = "14px";
-      notice.style.lineHeight = "1.6";
-      mediaInner.appendChild(notice);
     }
   }
 
