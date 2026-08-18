@@ -4,26 +4,28 @@
   <meta name="robots" content="noindex,nofollow">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JNONO | Admin Settings</title>
+  <title>JNONO | 系统设置</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=20260727a" />
+  <link rel="stylesheet" href="/styles.css?v=20260818b" />
 </head>
 <body class="admin-shell">
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="admin-sidebar-brand">JNONO Admin</div>
       <nav class="admin-sidebar-nav">
-        <a href="/admin.html">Admin Home</a>
-        <a href="/admin-structure.html">Structure</a>
-        <a href="/admin-questions.html">Questions</a>
-        <a href="/admin-translation.html">Translation</a>
-        <a href="/admin-members.html">Members</a>
-        <a href="/admin-progress.html">Progress</a>
-        <a href="/admin-dashboard.html">Dashboard</a>
-        <a class="active" href="/admin-settings.html">Settings</a>
-        <a href="/">Front site</a>
+        <a href="/admin.html">管理首页</a>
+        <span class="admin-nav-label">用户</span>
+        <a href="/admin-members.html">用户管理</a>
+        <span class="admin-nav-label">内容</span>
+        <a href="/admin-structure.html">考试结构</a>
+        <a href="/admin-questions.html">题库管理</a>
+        <span class="admin-nav-label">系统</span>
+        <a href="/admin-dashboard.html">前台配置</a>
+        <a class="active" href="/admin-settings.html">系统设置</a>
+        <hr class="admin-nav-divider" />
+        <a href="/">前台首页</a>
       </nav>
       <div class="auth-actions admin-sidebar-auth">
         <span id="adminWelcome" class="welcome hidden"></span>
@@ -139,7 +141,7 @@
     </main>
   </div>
 
-  <script src="/admin.js?v=20260727a" type="module"></script>
+  <script src="/admin.js?v=20260818b" type="module"></script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b2bcc256ac741e8b45dcc4ad8f69bef"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

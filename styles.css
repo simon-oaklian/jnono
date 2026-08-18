@@ -5474,3 +5474,21 @@ body.quiz-shell-open .quiz-progress-track {
     font-weight: 500;
   }
 }
+
+body.admin-shell .admin-nav-label {
+  display: block;
+  padding: 10px 10px 2px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #a0aab8;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+}
+
+body.admin-shell .admin-nav-divider {
+  border: none;
+  border-top: 1px solid #d7e0e8;
+  margin: 4px 0;
+}

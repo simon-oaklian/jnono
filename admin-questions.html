@@ -4,26 +4,28 @@
   <meta name="robots" content="noindex,nofollow">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JNONO | Admin Questions</title>
+  <title>JNONO | 题库管理</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=20260727a" />
+  <link rel="stylesheet" href="/styles.css?v=20260818b" />
 </head>
 <body class="admin-shell">
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="admin-sidebar-brand">JNONO Admin</div>
       <nav class="admin-sidebar-nav">
-        <a href="/admin.html">Admin Home</a>
-        <a href="/admin-structure.html">Structure</a>
-        <a class="active" href="/admin-questions.html">Questions</a>
-        <a href="/admin-translation.html">Translation</a>
-        <a href="/admin-members.html">Members</a>
-        <a href="/admin-progress.html">Progress</a>
-        <a href="/admin-dashboard.html">Dashboard</a>
-        <a href="/admin-settings.html">Settings</a>
-        <a href="/">Front site</a>
+        <a href="/admin.html">管理首页</a>
+        <span class="admin-nav-label">用户</span>
+        <a href="/admin-members.html">用户管理</a>
+        <span class="admin-nav-label">内容</span>
+        <a href="/admin-structure.html">考试结构</a>
+        <a class="active" href="/admin-questions.html">题库管理</a>
+        <span class="admin-nav-label">系统</span>
+        <a href="/admin-dashboard.html">前台配置</a>
+        <a href="/admin-settings.html">系统设置</a>
+        <hr class="admin-nav-divider" />
+        <a href="/">前台首页</a>
       </nav>
       <div class="auth-actions admin-sidebar-auth">
         <span id="adminWelcome" class="welcome hidden"></span>
@@ -53,6 +55,12 @@
 
       <section id="adminPanel" class="panel hidden">
       <div class="panel-head">
+        <h2>题库管理</h2>
+        <p>权限分类 / 考试分类 / 题库导入 / 题目管理 / 翻译校对</p>
+      </div>
+
+      <!-- 权限分类 -->
+      <div class="panel-head" style="margin-top:16px;">
         <h2>权限分类管理</h2>
         <p>用于会员授权（如 b_license / c_license）。不作为题目分类字典。</p>
       </div>
@@ -101,6 +109,7 @@
 
       <hr style="margin:18px 0;border:none;border-top:1px solid #d7e0e8;" />
 
+      <!-- 考试分类 -->
       <div class="panel-head">
         <h2>考试分类管理</h2>
         <p>按考试维护分类（用于分类练习与导入映射）。</p>
@@ -157,6 +166,7 @@
 
       <hr style="margin:18px 0;border:none;border-top:1px solid #d7e0e8;" />
 
+      <!-- 题库导入 -->
       <div class="panel-head">
         <h2>题库导入中心</h2>
         <p>支持简单版（纯英文）和完整版（中英扩展字段）两种 CSV 导入。</p>
@@ -217,8 +227,9 @@
         <div id="bankStats" class="progress-cards" style="margin-top:12px;"></div>
       </div>
 
+      <!-- 题目管理 -->
       <details id="questionManagerSection" class="panel admin-collapsible admin-collapsible-panel" style="margin-top:12px;padding:14px;">
-        <summary>题目管理 (Question Manager)</summary>
+        <summary>题目管理（筛选 / 暂停 / 删除）</summary>
         <div class="admin-collapsible-body">
           <div class="panel-head">
             <p>按分类/考试/状态筛选题目，支持快速暂停、恢复和软删除。</p>
@@ -287,11 +298,105 @@
           <p id="qmMsg" class="register-success hidden" style="margin-top:8px;"></p>
         </div>
       </details>
+
+      <!-- 翻译校对（原 admin-translation.html） -->
+      <details id="translationReviewSection" class="panel admin-collapsible admin-collapsible-panel" style="margin-top:12px;padding:14px;">
+        <summary>翻译校对</summary>
+        <div class="admin-collapsible-body">
+          <div class="panel-head">
+            <p>导入英文题后可在此校对中文翻译，保存后前台立即生效。</p>
+          </div>
+          <div class="filters">
+            <label>
+              考试分类
+              <select id="reviewExamSelect"></select>
+            </label>
+            <label>
+              题目
+              <select id="reviewQuestionSelect"></select>
+            </label>
+          </div>
+          <p id="reviewEditorEmpty" class="admin-help-text" style="margin-top:14px;padding:12px;text-align:center;">请先在上方选择考试分类和题目，编辑区将在选题后显示。</p>
+          <div id="reviewEditorPanel" class="panel hidden" style="margin-top:12px;padding:12px;">
+            <p style="margin:0 0 10px;color:#5f6d82;">
+              翻译状态：<strong id="reviewTranslationStatus">--</strong>
+            </p>
+            <div class="filters" style="gap:10px;margin-bottom:10px;">
+              <label style="max-width:220px;">
+                题目状态
+                <select id="reviewQuestionStatus">
+                  <option value="active">active</option>
+                  <option value="inactive">inactive</option>
+                  <option value="deleted">deleted</option>
+                </select>
+              </label>
+              <label style="min-width:280px;">
+                归属考试（exam_code）
+                <select id="reviewTargetExamSelect"></select>
+              </label>
+            </div>
+            <label>
+              英文题干（只读）
+              <textarea id="reviewPromptEn" rows="2" readonly></textarea>
+            </label>
+            <label>
+              中文题干（可编辑）
+              <textarea id="reviewPromptZh" rows="2"></textarea>
+            </label>
+            <label>
+              英文选项（只读）
+              <textarea id="reviewOptionsEn" rows="4" readonly></textarea>
+            </label>
+            <label>
+              中文选项（可编辑，每行一个）
+              <textarea id="reviewOptionsZh" rows="4"></textarea>
+            </label>
+            <label>
+              英文解析（只读）
+              <textarea id="reviewExplanationEn" rows="3" readonly></textarea>
+            </label>
+            <label>
+              Memory Trick（可编辑）
+              <textarea id="reviewMemoryTrick" rows="2" placeholder="可选：输入记忆技巧或答题技巧"></textarea>
+              <p style="margin-top:6px;font-size:12px;color:#7b8798;">用于填写中文记忆技巧 / 快速记忆口诀 / 易错提醒，可留空。</p>
+            </label>
+            <label>
+              中文解析（可编辑）
+              <textarea id="reviewExplanationZh" rows="3"></textarea>
+            </label>
+            <label>
+              英文考点分析（只读）
+              <textarea id="reviewKeyPointEn" rows="2" readonly></textarea>
+            </label>
+            <label>
+              中文考点分析（可编辑）
+              <textarea id="reviewKeyPointZh" rows="2"></textarea>
+            </label>
+            <label>
+              英文答题理由（只读）
+              <textarea id="reviewReasoningEn" rows="3" readonly></textarea>
+            </label>
+            <label>
+              中文答题理由（可编辑）
+              <textarea id="reviewReasoningZh" rows="3"></textarea>
+            </label>
+            <label>
+              中文题型（可编辑）
+              <input id="reviewQuestionTypeZh" type="text" placeholder="例如：安全管理" />
+            </label>
+            <div class="catalog-actions">
+              <button class="btn primary" id="saveReviewBtn">保存中文翻译</button>
+            </div>
+            <p id="reviewSaveMsg" class="register-success hidden" style="margin-top:8px;"></p>
+          </div>
+        </div>
+      </details>
+
       </section>
     </main>
   </div>
 
-  <script src="/admin.js?v=20260727a" type="module"></script>
+  <script src="/admin.js?v=20260818b" type="module"></script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b2bcc256ac741e8b45dcc4ad8f69bef"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

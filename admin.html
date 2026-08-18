@@ -4,26 +4,28 @@
   <meta name="robots" content="noindex,nofollow">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JNONO | Admin Dashboard</title>
+  <title>JNONO | 管理首页</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=20260727a" />
+  <link rel="stylesheet" href="/styles.css?v=20260818b" />
 </head>
 <body class="admin-shell">
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="admin-sidebar-brand">JNONO Admin</div>
       <nav class="admin-sidebar-nav">
-        <a class="active" href="/admin.html">Admin Home</a>
-        <a href="/admin-structure.html">Structure</a>
-        <a href="/admin-questions.html">Questions</a>
-        <a href="/admin-translation.html">Translation</a>
-        <a href="/admin-members.html">Members</a>
-        <a href="/admin-progress.html">Progress</a>
-        <a href="/admin-dashboard.html">Dashboard</a>
-        <a href="/admin-settings.html">Settings</a>
-        <a href="/">Front site</a>
+        <a class="active" href="/admin.html">管理首页</a>
+        <span class="admin-nav-label">用户</span>
+        <a href="/admin-members.html">用户管理</a>
+        <span class="admin-nav-label">内容</span>
+        <a href="/admin-structure.html">考试结构</a>
+        <a href="/admin-questions.html">题库管理</a>
+        <span class="admin-nav-label">系统</span>
+        <a href="/admin-dashboard.html">前台配置</a>
+        <a href="/admin-settings.html">系统设置</a>
+        <hr class="admin-nav-divider" />
+        <a href="/">前台首页</a>
       </nav>
       <div class="auth-actions admin-sidebar-auth">
         <span id="adminWelcome" class="welcome hidden"></span>
@@ -54,50 +56,40 @@
       <section id="adminPanel" class="panel hidden">
         <div class="panel-head">
           <h2>管理首页</h2>
-          <p>选择你要操作的模块</p>
+          <p>选择要操作的模块</p>
         </div>
-        <div class="benefit-grid">
+        <div class="benefit-grid" style="margin-top:16px;">
           <article>
-            <h3>Structure</h3>
-            <p>管理结构树与考试项目配置。</p>
-            <a class="btn primary" href="/admin-structure.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Structure</a>
+            <h3>👥 用户管理</h3>
+            <p>会员计划、账号状态、内容权限、考试绑定与学习进度。</p>
+            <a class="btn primary" href="/admin-members.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入</a>
           </article>
           <article>
-            <h3>Questions</h3>
-            <p>管理分类、导入题库、题目筛选与状态。</p>
-            <a class="btn primary" href="/admin-questions.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Questions</a>
+            <h3>🏗 考试结构</h3>
+            <p>维护结构树（项目/子项）与考试项目配置。</p>
+            <a class="btn primary" href="/admin-structure.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入</a>
           </article>
           <article>
-            <h3>Translation</h3>
-            <p>管理中文翻译校对与状态保存。</p>
-            <a class="btn primary" href="/admin-translation.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Translation</a>
+            <h3>📚 题库管理</h3>
+            <p>权限分类、考试分类、题库导入、翻译校对与题目筛选。</p>
+            <a class="btn primary" href="/admin-questions.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入</a>
           </article>
           <article>
-            <h3>Members</h3>
-            <p>管理会员计划、账号状态与内容权限。</p>
-            <a class="btn primary" href="/admin-members.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Members</a>
+            <h3>🖥 前台配置</h3>
+            <p>控制首页模块显示、排序、可见范围与课程占位入口。</p>
+            <a class="btn primary" href="/admin-dashboard.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入</a>
           </article>
           <article>
-            <h3>Progress</h3>
-            <p>管理考试绑定与学习/执照进度。</p>
-            <a class="btn primary" href="/admin-progress.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Progress</a>
-          </article>
-          <article>
-            <h3>Dashboard</h3>
-            <p>管理前台模块显示、可见范围和课程占位入口。</p>
-            <a class="btn primary" href="/admin-dashboard.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Dashboard</a>
-          </article>
-          <article>
-            <h3>Settings</h3>
-            <p>管理微信联系、价格文案与全局站点配置。</p>
-            <a class="btn primary" href="/admin-settings.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入 Settings</a>
+            <h3>⚙️ 系统设置</h3>
+            <p>微信联系、会员价格与限时优惠配置。</p>
+            <a class="btn primary" href="/admin-settings.html" style="display:inline-flex;margin-top:10px;text-decoration:none;">进入</a>
           </article>
         </div>
       </section>
     </main>
   </div>
 
-  <script src="/admin.js?v=20260727a" type="module"></script>
+  <script src="/admin.js?v=20260818b" type="module"></script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b2bcc256ac741e8b45dcc4ad8f69bef"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

@@ -4,26 +4,28 @@
   <meta name="robots" content="noindex,nofollow">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JNONO | Admin Members</title>
+  <title>JNONO | 用户管理</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=20260727a" />
+  <link rel="stylesheet" href="/styles.css?v=20260818b" />
 </head>
 <body class="admin-shell">
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="admin-sidebar-brand">JNONO Admin</div>
       <nav class="admin-sidebar-nav">
-        <a href="/admin.html">Admin Home</a>
-        <a href="/admin-structure.html">Structure</a>
-        <a href="/admin-questions.html">Questions</a>
-        <a href="/admin-translation.html">Translation</a>
-        <a class="active" href="/admin-members.html">Members</a>
-        <a href="/admin-progress.html">Progress</a>
-        <a href="/admin-dashboard.html">Dashboard</a>
-        <a href="/admin-settings.html">Settings</a>
-        <a href="/">Front site</a>
+        <a href="/admin.html">管理首页</a>
+        <span class="admin-nav-label">用户</span>
+        <a class="active" href="/admin-members.html">用户管理</a>
+        <span class="admin-nav-label">内容</span>
+        <a href="/admin-structure.html">考试结构</a>
+        <a href="/admin-questions.html">题库管理</a>
+        <span class="admin-nav-label">系统</span>
+        <a href="/admin-dashboard.html">前台配置</a>
+        <a href="/admin-settings.html">系统设置</a>
+        <hr class="admin-nav-divider" />
+        <a href="/">前台首页</a>
       </nav>
       <div class="auth-actions admin-sidebar-auth">
         <span id="adminWelcome" class="welcome hidden"></span>
@@ -35,7 +37,7 @@
       <section id="adminLoginPanel" class="panel" style="max-width:560px;margin:30px auto 0;">
         <div class="panel-head">
           <h2>管理系统登录</h2>
-          <p>登录后进入会员管理模块</p>
+          <p>登录后进入用户管理模块</p>
         </div>
         <form id="adminLoginForm" class="login-form" style="margin-top:14px;">
           <label>
@@ -53,17 +55,17 @@
 
       <section id="adminPanel" class="panel hidden">
         <div class="panel-head">
-          <h2>会员管理（Members）</h2>
-          <p>按“列表浏览 → 用户摘要 → 会员编辑”的顺序管理用户与套餐权限。</p>
+          <h2>用户管理</h2>
+          <p>会员列表 → 选择用户 → 编辑会员设置、考试绑定与学习进度，一页完成。</p>
         </div>
 
+        <!-- A. 用户列表 -->
         <div class="panel" style="margin-top:12px;padding:14px;">
           <div class="panel-head">
-            <h2>A. 会员列表区</h2>
-            <p>用于快速浏览用户、查看核心状态并选择进入详情编辑。</p>
+            <h2>用户列表</h2>
           </div>
           <div class="catalog-actions" style="align-items:center;">
-            <button class="btn" id="reloadUsersBtn">刷新会员列表</button>
+            <button class="btn" id="reloadUsersBtn">刷新列表</button>
             <label class="toggle" style="margin-left:6px;">
               <input id="showArchivedUsersToggle" type="checkbox" />
               <span>显示已归档账号</span>
@@ -80,14 +82,15 @@
           <p id="adminSaveMsg" class="register-success hidden" style="margin-top:8px;"></p>
         </div>
 
+        <!-- B. 用户摘要 -->
         <div class="panel" style="margin-top:12px;padding:14px;">
           <div class="panel-head">
-            <h2>B. 用户详情摘要区</h2>
-            <p>选中用户后，集中查看身份、套餐、状态、考试分配与备注摘要。</p>
+            <h2>用户摘要</h2>
+            <p>选中用户后显示，包含会员状态与学习进度概览。</p>
           </div>
           <div class="member-summary-card">
             <article>
-              <h4>用户姓名</h4>
+              <h4>姓名</h4>
               <div id="memberSummaryName">未选择用户</div>
             </article>
             <article>
@@ -103,36 +106,62 @@
               <div id="memberSummaryPhone">--</div>
             </article>
             <article>
-              <h4>当前会员计划</h4>
+              <h4>会员计划</h4>
               <div id="memberSummaryTier">--</div>
             </article>
             <article>
-              <h4>当前账号状态</h4>
+              <h4>账号状态</h4>
               <div id="memberSummaryStatus">--</div>
+            </article>
+            <article>
+              <h4>到期时间</h4>
+              <div id="memberSummaryExpires">--</div>
+            </article>
+            <article>
+              <h4>学习进度</h4>
+              <div id="progressSummaryPercent">--</div>
+            </article>
+            <article>
+              <h4>CSLB 申请状态</h4>
+              <div id="progressSummaryApplication">--</div>
+            </article>
+            <article>
+              <h4>考试预约状态</h4>
+              <div id="progressSummaryScheduled">--</div>
             </article>
             <article style="grid-column:span 2;">
               <h4>已分配考试</h4>
               <div id="memberSummaryExams">--</div>
             </article>
-            <article>
-              <h4>到期时间（如有）</h4>
-              <div id="memberSummaryExpires">--</div>
-            </article>
             <article style="grid-column:span 2;">
-              <h4>备注摘要</h4>
+              <h4>备注</h4>
               <div id="memberSummaryNotes">--</div>
             </article>
           </div>
+          <!-- 隐藏的重复摘要元素，供 admin.js 写入不显示的字段 -->
+          <div style="display:none;">
+            <div id="progressSummaryName"></div>
+            <div id="progressSummaryEmail"></div>
+            <div id="progressSummaryExams"></div>
+            <div id="progressSummaryTier"></div>
+            <div id="progressSummaryUpdated"></div>
+          </div>
         </div>
 
+        <!-- C. 编辑设置 -->
         <div class="panel" style="margin-top:12px;padding:14px;">
           <div class="panel-head">
-            <h2>C. 会员与内容权限编辑区</h2>
-            <p>分组管理：C1 会员计划与账号状态 / C2 内容权限覆盖 / C3 基础资料。</p>
+            <h2>编辑设置</h2>
+            <p>选择用户后编辑会员计划、权限与学习进度，保存后立即生效。</p>
           </div>
 
+          <!-- 用户选择 -->
           <div class="filters">
             <label style="min-width:280px;">
+              搜索用户（姓名 / 昵称 / 邮箱）
+              <input id="progressUserSearchInput" type="text" placeholder="输入关键词后筛选" />
+            </label>
+            <label style="flex:1 1 320px;">
               当前编辑用户
               <select id="userAssignSelect"></select>
             </label>
@@ -141,15 +170,17 @@
               <input id="userAssignTierInput" type="text" readonly placeholder="--" />
             </label>
           </div>
+          <p id="progressSelectedUserLabel" class="admin-help-text" style="margin-top:6px;">当前未选择用户</p>
+          <div id="progressUserSearchResults" class="progress-user-results" style="margin-top:8px;"></div>
 
-          <div class="panel" style="margin-top:10px;padding:12px;">
+          <!-- C1. 会员计划与账号状态 -->
+          <div class="panel" style="margin-top:14px;padding:12px;">
             <div class="panel-head">
-              <h2>C1. 会员计划与账号状态</h2>
-              <p>会员计划（Trial / Basic / Pro / AI）与账号状态（Active / Archived / Deleted）独立管理。</p>
+              <h2>会员计划与账号状态</h2>
             </div>
             <div class="filters">
               <label>
-                会员计划（membership tier）
+                会员计划
                 <select id="userAssignMembershipTierInput">
                   <option value="free">Trial</option>
                   <option value="basic_399">Basic</option>
@@ -168,19 +199,20 @@
               <label>
                 到期时间（可修改）
                 <input id="userAssignMembershipExpiresInput" type="date" placeholder="YYYY-MM-DD" />
-                <small style="color:#6b7a8c;font-size:11px;">修改后点「保存会员信息」生效，留空不变</small>
+                <small style="color:#6b7a8c;font-size:11px;">留空不变，修改后保存生效</small>
               </label>
             </div>
           </div>
 
+          <!-- C2. 内容权限覆盖 -->
           <div class="panel" style="margin-top:10px;padding:12px;">
             <div class="panel-head">
-              <h2>C2. 内容权限覆盖</h2>
+              <h2>内容权限覆盖</h2>
               <p>默认跟随套餐，可人工覆盖。</p>
             </div>
             <div class="filters">
               <label>
-                中文辅助权限
+                中文辅助
                 <select id="userBilingualEnabledInput">
                   <option value="">按套餐默认</option>
                   <option value="1">强制启用</option>
@@ -188,7 +220,7 @@
                 </select>
               </label>
               <label>
-                解析权限
+                解析
                 <select id="userExplanationEnabledInput">
                   <option value="">按套餐默认</option>
                   <option value="1">强制启用</option>
@@ -196,7 +228,7 @@
                 </select>
               </label>
               <label>
-                记忆技巧权限
+                记忆技巧
                 <select id="userMemoryTipsEnabledInput">
                   <option value="">按套餐默认</option>
                   <option value="1">强制启用</option>
@@ -207,10 +239,11 @@
             <p id="memberPermissionEffectiveHint" class="admin-help-text" style="margin-top:6px;"></p>
           </div>
 
+          <!-- C3. 基础资料 -->
           <div class="panel" style="margin-top:10px;padding:12px;">
             <div class="panel-head">
-              <h2>C3. 基础资料（必要编辑）</h2>
-              <p>当前版本后台仅做资料查看；用户可在前台账号设置中维护姓名/昵称/手机号。</p>
+              <h2>基础资料（只读）</h2>
+              <p>用户在前台账号设置中自行维护。</p>
             </div>
             <div class="filters">
               <label>
@@ -232,9 +265,74 @@
             </div>
           </div>
 
-          <div class="catalog-actions" style="margin-top:12px;">
+          <!-- C4. 考试绑定 -->
+          <div class="panel" style="margin-top:10px;padding:12px;">
+            <div class="panel-head">
+              <h2>考试绑定</h2>
+              <p>按可选项勾选，同步自 Structure 配置。</p>
+            </div>
+            <div id="progressAssignedExamOptions" class="progress-exam-options" style="margin-top:8px;"></div>
+            <p id="progressAssignedExamSummary" class="admin-help-text" style="margin-top:8px;">当前未分配考试</p>
+            <input id="assignedExamCodesInput" type="hidden" />
+            <div class="filters" style="margin-top:8px;">
+              <label style="flex:1 1 320px;">
+                分配模块标签（可选）
+                <input id="assignedModuleTagsInput" type="text" placeholder="例如：mock,course" />
+              </label>
+            </div>
+          </div>
+
+          <!-- C5. 学习 & 执照进度 -->
+          <div class="panel" style="margin-top:10px;padding:12px;">
+            <div class="panel-head">
+              <h2>学习 & 执照进度</h2>
+            </div>
+            <div class="filters">
+              <label class="toggle" style="align-self:flex-end;">
+                <input id="progressEnrolledInput" type="checkbox" checked />
+                <span>已报名（enrolled）</span>
+              </label>
+              <label>
+                申请编号
+                <input id="progressApplicationNumberInput" type="text" placeholder="可为空" />
+              </label>
+            </div>
+            <div class="filters">
+              <label>
+                学习进度（0–100）
+                <input id="progressPercentInput" type="number" min="0" max="100" value="0" />
+              </label>
+              <label class="toggle" style="align-self:flex-end;">
+                <input id="progressStudyStartedInput" type="checkbox" />
+                <span>已开始学习</span>
+              </label>
+            </div>
+            <div class="filters">
+              <label>
+                考试日期
+                <input id="progressExamDateInput" type="date" />
+              </label>
+              <label class="toggle" style="align-self:flex-end;">
+                <input id="progressExamScheduledInput" type="checkbox" />
+                <span>已预约考试</span>
+              </label>
+              <label class="toggle" style="align-self:flex-end;">
+                <input id="progressExamPassedInput" type="checkbox" />
+                <span>已通过考试</span>
+              </label>
+            </div>
+            <div class="filters">
+              <label style="flex:1 1 420px;">
+                备注
+                <input id="progressNotesInput" type="text" placeholder="管理员备注" />
+              </label>
+            </div>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="catalog-actions" style="margin-top:14px;">
             <button class="btn" id="reloadUserAssignmentBtn">加载用户数据</button>
-            <button class="btn primary" id="saveUserAssignmentBtn" data-default-text="保存会员设置">保存会员设置</button>
+            <button class="btn primary" id="saveUserAssignmentBtn" data-default-text="保存设置">保存设置</button>
           </div>
           <p id="userAssignmentMsg" class="register-success hidden" style="margin-top:8px;"></p>
         </div>
@@ -242,7 +340,7 @@
     </main>
   </div>
 
-  <script src="/admin.js?v=20260806b" type="module"></script>
+  <script src="/admin.js?v=20260818b" type="module"></script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b2bcc256ac741e8b45dcc4ad8f69bef"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
