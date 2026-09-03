@@ -244,6 +244,37 @@ DEFAULT_SITE_WECHAT_ID = "JNONO_HELP"
 FAR_FUTURE_EXPIRES_AT = "2099-12-31T23:59:59+00:00"
 
 DEFAULT_ASSIGNED_EXAM_CODES = ["LAW_BUSINESS", "B_GENERAL"]
+
+# Approximate PSI blueprint weights for mock exam question sampling.
+# Values represent relative target question counts (sum ≈ exam question_count).
+# Derived from observed PSI exam result section breakdowns; no official outline available.
+# Core categories mirror PSI sections; supplemental categories (Updates, HEALTH_SAFETY_TEST)
+# are included at minimal weight so students get occasional exposure.
+EXAM_MOCK_CATEGORY_WEIGHTS: dict[str, dict[str, int]] = {
+    "b_general_law_business": {
+        "BUSINESS_ORGANIZATION":            16,  # PSI section ~16q
+        "BUSINESS_FINANCES":                17,  # PSI section ~17q
+        "EMPLOYMENT_REQUIREMENTS":          20,  # PSI section ~20q
+        "BONDS_INSURANCE_LIENS":            12,  # PSI section ~12q
+        "CONTRACT_REQUIREMENTS_EXECUTION":  20,  # PSI section ~20q
+        "LICENSING_REQUIREMENTS":           13,  # PSI section ~13q
+        "PUBLIC_WORKS":                     14,  # PSI section ~14q
+        "SAFETY":                           13,  # PSI section ~13q
+        # total = 125 → system scales to actual questionCount (115)
+    },
+    "ca_general_b": {
+        "B_PLANNING_ESTIMATING":        37,  # PSI sections 1+2 (planning ~17q + plans/codes ~23q)
+        "B_FRAMING_STRUCTURAL":         32,  # PSI section 3 (~35q, largest section)
+        "B_CORE_TRADES_PART_1":         11,  # PSI section 4 first half (~23q total)
+        "B_CORE_TRADES_PART_2":         10,  # PSI section 4 second half
+        "B_FINISH_TRADES":              15,  # PSI section 5 (~17q)
+        "B_HEALTH_SAFETY":               5,  # safety knowledge, small
+        "HEALTH_SAFETY_TEST":            2,  # supplemental, minimal exposure
+        "B_GENERAL_BUILDING_UPDATES_1":  2,  # supplemental, minimal exposure
+        "B_GENERAL_BUILDING_UPDATES_2":  1,  # supplemental, minimal exposure
+        # total = 115 → maps directly to questionCount
+    },
+}
 MODULE_TYPE_VALUES = {
     "exam_card",
     "practice_center",
@@ -6453,6 +6484,7 @@ def ensure_exam(
             exam["simulation"] = {
                 "questionCount": safe_question_count,
                 "examTimeMinutes": safe_exam_time_minutes,
+                "categoryWeights": EXAM_MOCK_CATEGORY_WEIGHTS.get(normalized_code or exam_id, {}),
             }
             return exam
 
@@ -6474,6 +6506,7 @@ def ensure_exam(
         "simulation": {
             "questionCount": safe_question_count,
             "examTimeMinutes": safe_exam_time_minutes,
+            "categoryWeights": EXAM_MOCK_CATEGORY_WEIGHTS.get(normalized_code or exam_id, {}),
         },
         "questions": [],
     }
@@ -7381,6 +7414,7 @@ def compose_bank_from_tables(
             "simulation": {
                 "questionCount": int(exam.get("questionCount") or 100),
                 "examTimeMinutes": int(exam.get("examTimeMinutes") or 180),
+                "categoryWeights": EXAM_MOCK_CATEGORY_WEIGHTS.get(exam_code, {}),
             },
             "categories": categories_payload,
             "questions": question_items,
