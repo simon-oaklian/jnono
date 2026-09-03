@@ -3331,6 +3331,12 @@ async function loadAccountProfile(options = {}) {
     if (String(profile.email || "").trim()) {
       state.user.email = String(profile.email || "").trim();
     }
+    if (profile.bilingualEntitlement && typeof profile.bilingualEntitlement === "object") {
+      state.user.bilingualEntitlement = profile.bilingualEntitlement;
+    }
+    if (profile.aiEntitlement && typeof profile.aiEntitlement === "object") {
+      state.user.aiEntitlement = profile.aiEntitlement;
+    }
     return profile;
   } catch (err) {
     if (!silent && accountProfileMsg) {

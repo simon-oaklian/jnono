@@ -3889,7 +3889,8 @@ async function renderUsers() {
           <button type="button" class="btn" data-action="select-user">查看</button>
           ${isSystem
             ? `<span style="font-size:12px;color:#9aabb8;align-self:center;">重启自动重建</span>`
-            : `<button type="button" class="btn" data-action="${accountStatus === "suspended" ? "restore-user" : "archive-user"}">${accountStatus === "suspended" ? "恢复" : "归档"}</button>
+            : `<button type="button" class="btn" data-action="reset-password">重置密码</button>
+          <button type="button" class="btn" data-action="${accountStatus === "suspended" ? "restore-user" : "archive-user"}">${accountStatus === "suspended" ? "恢复" : "归档"}</button>
           <button type="button" class="btn ghost" data-action="delete-user">删除</button>`}
         </div>
       </td>
@@ -4090,7 +4091,7 @@ async function onUsersTableClick(event) {
     return;
   }
   const action = button.dataset.action || "";
-  if (!["select-user", "archive-user", "restore-user", "delete-user"].includes(action)) return;
+  if (!["select-user", "archive-user", "restore-user", "delete-user", "reset-password"].includes(action)) return;
   const row = clickedRow;
   const userId = Number(row.dataset.userId || "0");
   if (!userId) return;
@@ -4100,6 +4101,10 @@ async function onUsersTableClick(event) {
     return;
   }
 
+  if (action === "reset-password") {
+    await resetUserPassword(userId, row.dataset.userEmail || `ID ${userId}`);
+    return;
+  }
   if (action === "delete-user") {
     await deleteUserFromRow(row, userId);
     return;
@@ -4110,6 +4115,28 @@ async function onUsersTableClick(event) {
   }
   if (action === "restore-user") {
     await updateUserStatusFromRow(row, userId, "active");
+  }
+}
+
+async function resetUserPassword(userId, emailLabel) {
+  if (!adminSaveMsg) return;
+  const confirmed = confirm(`确认为账号 ${emailLabel} 生成新的临时密码吗？\n旧密码将立即失效。`);
+  if (!confirmed) return;
+  try {
+    const result = await apiFetch(`/api/admin/users/${userId}/reset-password`, {
+      method: "POST",
+      token: state.token,
+    });
+    const pw = result?.newPassword || "";
+    const name = result?.name || emailLabel;
+    alert(`密码已重置！\n\n账号：${result?.email || emailLabel}\n姓名：${name}\n新密码：${pw}\n\n请告知用户登录后修改密码。`);
+    adminSaveMsg.textContent = `已为 ${emailLabel} 重置密码。`;
+    adminSaveMsg.style.color = "#0b6b53";
+    adminSaveMsg.classList.remove("hidden");
+  } catch (err) {
+    adminSaveMsg.textContent = `重置失败：${err.message}`;
+    adminSaveMsg.style.color = "#be2f2f";
+    adminSaveMsg.classList.remove("hidden");
   }
 }
 

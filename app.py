@@ -9,6 +9,7 @@ import os
 import re
 import secrets
 import sqlite3
+import string
 import sys
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
@@ -9010,6 +9011,7 @@ class AppHandler(SimpleHTTPRequestHandler):
                     return
                 with db_conn() as conn:
                     ensure_user_profile_columns(conn)
+                    ensure_all_user_entitlements(conn)
                     row = conn.execute(
                         """
                         SELECT id, name, nickname, email, phone, membership_tier
@@ -9018,9 +9020,22 @@ class AppHandler(SimpleHTTPRequestHandler):
                         """,
                         (int(user["id"]),),
                     ).fetchone()
+                    ent_row = conn.execute(
+                        """
+                        SELECT bilingual_access, bilingual_expires_at, ai_access, ai_expires_at
+                        FROM user_entitlements WHERE user_id = ?
+                        """,
+                        (int(user["id"]),),
+                    ).fetchone()
                 if not row:
                     self.send_json(404, {"error": "用户不存在"})
                     return
+                bi_has = bool(ent_row["bilingual_access"]) if ent_row else False
+                bi_exp = normalize_expires_at(ent_row["bilingual_expires_at"]) if ent_row else None
+                bi_active, bi_expired = compute_entitlement_state(bi_has, bi_exp)
+                ai_has = bool(ent_row["ai_access"]) if ent_row else False
+                ai_exp = normalize_expires_at(ent_row["ai_expires_at"]) if ent_row else None
+                ai_active, ai_expired = compute_entitlement_state(ai_has, ai_exp)
                 self.send_json(
                     200,
                     {
@@ -9033,6 +9048,18 @@ class AppHandler(SimpleHTTPRequestHandler):
                             "email": clean_text(row["email"]),
                             "phone": clean_text(row["phone"]),
                             "membershipTier": normalize_membership_tier(row["membership_tier"], "free"),
+                            "bilingualEntitlement": {
+                                "hasAccess": bi_has,
+                                "expiresAt": bi_exp,
+                                "isActive": bi_active,
+                                "isExpired": bi_expired,
+                            },
+                            "aiEntitlement": {
+                                "hasAccess": ai_has,
+                                "expiresAt": ai_exp,
+                                "isActive": ai_active,
+                                "isExpired": ai_expired,
+                            },
                         },
                     },
                 )
@@ -11771,6 +11798,36 @@ class AppHandler(SimpleHTTPRequestHandler):
                     user_payload = self.fetch_user_payload(conn, uid)
 
                 self.send_json(200, {"ok": True, "changed": changed, "user": user_payload})
+                return
+
+            if method == "POST" and re.match(r"^/api/admin/users/\d+/reset-password$", path):
+                if not self.require_admin():
+                    return
+                uid = int(path.split("/")[-2])
+                with db_conn() as conn:
+                    row = conn.execute(
+                        "SELECT id, name, email FROM users WHERE id = ?", (uid,)
+                    ).fetchone()
+                    if not row:
+                        self.send_json(404, {"error": "用户不存在"})
+                        return
+                    _protected = {u["email"] for u in DEFAULT_USERS}
+                    if row["email"] in _protected:
+                        self.send_json(403, {"error": "系统默认账号不可重置密码"})
+                        return
+                    alphabet = string.ascii_letters + string.digits
+                    new_password = "".join(secrets.choice(alphabet) for _ in range(8))
+                    conn.execute(
+                        "UPDATE users SET password = ? WHERE id = ?",
+                        (hash_password(new_password), uid),
+                    )
+                self.send_json(200, {
+                    "ok": True,
+                    "newPassword": new_password,
+                    "userId": uid,
+                    "name": row["name"],
+                    "email": row["email"],
+                })
                 return
 
             if method == "GET" and path == "/api/admin/questions":
