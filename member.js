@@ -309,6 +309,7 @@ const saveLicensingProgressBtn = document.getElementById("saveLicensingProgressB
 const licensingProgressMsg = document.getElementById("licensingProgressMsg");
 const practiceContextExam = document.getElementById("practiceContextExam");
 const practiceContextMode = document.getElementById("practiceContextMode");
+const practiceContextTypeBadge = document.getElementById("practiceContextTypeBadge");
 const summaryExamEls = Array.from(document.querySelectorAll('[data-summary="exam"]'));
 const summaryProgressEls = Array.from(document.querySelectorAll('[data-summary="study-progress"]'));
 const summarySubmittedEls = Array.from(document.querySelectorAll('[data-summary="application-submitted"]'));
@@ -1094,6 +1095,17 @@ function updatePracticeContext() {
   if (practiceContextMode) {
     practiceContextMode.textContent = getPracticeModeLabel();
   }
+  if (practiceContextTypeBadge) {
+    const examType = getCurrentExamType();
+    if (examType) {
+      practiceContextTypeBadge.textContent = examTypeLabel(examType);
+      practiceContextTypeBadge.className = `exam-type-badge exam-type-badge--${examType === "law_business" ? "law" : "trade"}`;
+      practiceContextTypeBadge.classList.remove("hidden");
+    } else {
+      practiceContextTypeBadge.textContent = "";
+      practiceContextTypeBadge.classList.add("hidden");
+    }
+  }
   updateSummaryStrip();
 }
 
@@ -1260,7 +1272,12 @@ function resolveExamType(exam) {
 }
 
 function examTypeLabel(examType) {
-  return examType === "law_business" ? "Law & Business" : "Trade";
+  return examType === "law_business" ? "法律考试" : "技术考试";
+}
+
+function getCurrentExamType() {
+  const exam = getCurrentExam();
+  return exam ? resolveExamType(exam) : null;
 }
 
 function findExamById(examId) {
@@ -1896,11 +1913,19 @@ function renderQuestion() {
     } else {
       modeText = `模拟考试（${officialCount} 题 / ${officialMinutes} 分钟）`;
     }
+  } else if (state.activeMode === "wrong-book") {
+    modeText = "错题练习";
+  } else if (state.activeMode === "category" && state.sessionSectionName === "收藏题") {
+    modeText = "收藏练习";
+  } else if (state.sessionSectionName && state.sessionSectionName !== "全部分类") {
+    modeText = `分类：${state.sessionSectionName}`;
   }
 
   const view = getQuestionView(q);
 
-  quizTitle.textContent = `${exam.name} · ${modeText}`;
+  const _quizExamType = resolveExamType(exam);
+  const _quizTypeLabel = _quizExamType === "law_business" ? "法律考试" : "技术考试";
+  quizTitle.textContent = `${_quizTypeLabel} · ${modeText}`;
   quizMeta.textContent = `第 ${state.currentIndex + 1} 题 / 共 ${state.quizQuestions.length} 题`;
   const _pb = document.getElementById("quizShellProgressBar");
   if (_pb && state.quizQuestions.length > 0) {
@@ -4937,6 +4962,10 @@ function updateActionButtons() {
   // 刷错题在模拟考模式下也可用（错题流程独立于模考，见 startCategoryQuiz）
   wrongBookBtn.disabled = !hasExam;
   if (starBookBtn) starBookBtn.disabled = !hasExam;
+  const _examType = getCurrentExamType();
+  const _typeShort = _examType === "law_business" ? "法律" : _examType === "trade" ? "技术" : "";
+  wrongBookBtn.textContent = _typeShort ? `刷错题（${_typeShort}）` : "刷错题";
+  if (starBookBtn) starBookBtn.textContent = _typeShort ? `★ 收藏（${_typeShort}）` : "★ 收藏";
 }
 
 function startMembershipSync() {

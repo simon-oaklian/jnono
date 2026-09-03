@@ -9,11 +9,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Barlow:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=20260620-mobile-v5" />
+  <link rel="stylesheet" href="/styles.css?v=20260903a" />
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">JNONO · 专注LICENSE考试培训</div>
+    <div class="brand">执照通</div>
     <nav>
       <a href="#dashboard">学习模块</a>
       <a href="#catalog">题库</a>
@@ -167,8 +167,9 @@
               <p>分项练习、模拟考试、学习结果与进度管理</p>
             </div>
             <div class="practice-context-bar" id="practiceContextBar">
-              <span>Current Exam：<strong id="practiceContextExam">未选择</strong></span>
-              <span>Current Mode：<strong id="practiceContextMode">分项练习</strong></span>
+              <span>当前科目：<strong id="practiceContextExam">未选择</strong></span>
+              <span id="practiceContextTypeBadge" class="exam-type-badge hidden"></span>
+              <span>训练模式：<strong id="practiceContextMode">分项练习</strong></span>
             </div>
             <div id="learningPathHintPractice" class="learning-path-inline-hint"></div>
 
@@ -198,7 +199,7 @@
                   <select id="tradeSelect"></select>
                 </label>
                 <label>
-                  Exam Type
+                  考试类型
                   <select id="examTypeSelect"></select>
                 </label>
                 <label id="topicLabel">
@@ -578,7 +579,7 @@
     </div>
   </div>
 
-  <script src="/member.js?v=20260818a" type="module"></script>
+  <script src="/member.js?v=20260903a" type="module"></script>
 
   <div id="quizShellOverlay" aria-hidden="true">
     <div class="quiz-shell-header">
